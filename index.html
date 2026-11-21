@@ -1,0 +1,1635 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>EVD Level Up</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=IBM+Plex+Sans+Thai:wght@500;700&display=swap" rel="stylesheet" />
+    <style>
+      :root{--navy:#12355b;--navy2:#1d4e7e;--sky:#2f8fd8;--sky-l:#e3f1fc;--teal:#0f9b8e;--teal-d:#0f7a70;--teal-l:#d3f2ee;--bg:#f3f7fb;--card:#ffffff;--line:#d6e1ec;--text:#12263d;--muted:#5a6f86;--red:#b83227;--red-l:#fdecea;--amber:#b86e00;--radius:14px;--top-h:54px;--app-h:100dvh;font-family:Sarabun,IBM Plex Sans Thai,Noto Sans Thai,system-ui,sans-serif;color:var(--text);background:var(--bg);font-size:17px;line-height:1.55}
+      *{box-sizing:border-box}
+      body{margin:0;background:var(--bg)}
+      body:before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--navy)}
+      button{font:inherit;cursor:pointer}
+      h1,h2,h3,.mtitle{font-family:IBM Plex Sans Thai,Sarabun,sans-serif;color:var(--navy)}
+      .muted{color:var(--muted)}.small{font-size:14px}.t-teal{color:var(--teal-d)}.t-sky{color:var(--sky)}
+      .topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;justify-content:space-between;gap:8px;height:var(--top-h);padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));background:var(--navy);color:#fff}
+      .brand{white-space:nowrap;flex:none;display:flex;align-items:center;gap:8px;background:none;border:0;color:#fff;font-weight:700;font-size:18px;padding:0;min-height:40px;min-width:40px}
+      .top-right{display:flex;align-items:center;gap:8px;min-width:0}
+      .topbar .btn,.total{white-space:nowrap}.topbar .btn.ghost{color:#fff;border-color:#ffffff59;background:transparent}
+      .total{display:inline-flex;align-items:center;gap:4px;font-weight:700}
+      .btn{border:1.5px solid var(--line);background:var(--card);color:var(--navy);border-radius:999px;padding:10px 18px;font-weight:600;min-height:44px}
+      .btn:hover{border-color:var(--sky)}.btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}
+      .btn.primary:hover{background:var(--teal-d)}.btn.primary:disabled{opacity:.55}
+      .btn.ghost{background:transparent}.btn.danger{color:var(--red)}.btn.sm{padding:4px 12px;min-height:34px;font-size:14px}.btn.lg{font-size:19px;padding:12px 26px}
+      .btn:focus-visible,.chip:focus-visible,.card-btn:focus-visible,.zbtn:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+      .link{background:none;border:0;color:var(--sky);text-decoration:underline;padding:0 4px}
+      .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.row.center{justify-content:center}
+      .mission{display:grid;height:calc(var(--app-h) - var(--top-h) - env(safe-area-inset-top,0px));grid-template-columns:minmax(0,1fr) clamp(320px,32vw,400px)}
+      .stage{position:relative;display:flex;flex-direction:column;min-height:0;background:#eaf1f8}
+      .scene-wrap{flex:1;min-height:0;display:flex}.scene{width:100%;height:100%;-webkit-user-select:none;user-select:none;touch-action:pan-y pinch-zoom;-webkit-touch-callout:none}
+      .panel{background:var(--card);border-left:1px solid var(--line);padding:16px;padding-bottom:max(16px,env(safe-area-inset-bottom,0px));overflow-y:auto;display:flex;flex-direction:column;gap:10px;overscroll-behavior:contain}
+      .panel .controls>.btn.primary,.panel .controls>.row>.btn.primary{position:sticky;bottom:0;z-index:3;box-shadow:0 -6px 14px #fffffff2,0 4px 10px #0f9b8e40}
+      .mtitle{font-weight:700;font-size:18px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+      .step{font-size:13px;color:var(--muted);background:var(--bg);border-radius:999px;padding:2px 10px;white-space:nowrap}
+      .goal{margin:0;font-weight:600;color:var(--teal-d)}.instr{margin:0}.controls{display:flex;flex-direction:column;gap:10px}
+      .tools{margin-top:auto;padding-top:8px;border-top:1px dashed var(--line)}
+      .zoombar{position:absolute;top:10px;right:10px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+      .zbtn{border:1.5px solid var(--line);background:#ffffffeb;border-radius:999px;padding:6px 14px;color:var(--navy);font-weight:600;min-height:38px}
+      .zbtn.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+      .nudge{display:grid;grid-template-columns:56px 1fr 56px;align-items:center;gap:8px}
+      .nbtn{-webkit-user-select:none;user-select:none;height:52px;border-radius:12px;border:1.5px solid var(--line);background:var(--sky-l);color:var(--navy);font-size:20px;font-weight:700}
+      .nbtn.sm{height:40px;width:40px;font-size:18px}.nbtn:active{transform:scale(.96)}
+      .nval{text-align:center;background:var(--bg);border-radius:12px;padding:4px}
+      .nval small{display:block;color:var(--muted);font-size:12.5px}.nval b{font-size:18px;color:var(--navy)}
+      .fb{border-radius:12px;padding:10px 12px;animation:pop .25s ease}
+      .fb-ok{background:var(--teal-l);color:#0b5b53}.fb-bad{background:var(--red-l);color:var(--red)}.fb-info{background:var(--sky-l);color:var(--navy)}
+      .fb-sub{font-size:15px;color:var(--text);margin-top:2px}.hint-box{background:#fff7e0;border-radius:12px;padding:8px 12px;font-size:15px}
+      .risk{display:flex;flex-direction:column;gap:2px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px}
+      .risk svg{width:100%;max-width:260px;height:auto}.risk span{font-weight:700;color:var(--red);font-size:15px}.risk small{font-size:12.5px}
+      .cards{display:flex;flex-direction:column;gap:8px}
+      .card-btn{text-align:left;border:2px solid var(--line);background:#fff;border-radius:12px;padding:12px 14px;color:var(--text);font-weight:600;min-height:52px}
+      .card-btn:hover:not(:disabled){border-color:var(--sky);background:var(--sky-l)}
+      .card-ok{border-color:var(--teal);background:var(--teal-l)}.card-bad{border-color:var(--red);background:var(--red-l)}.card-btn:disabled{cursor:default}
+      .choice-row{display:flex;flex-wrap:wrap;gap:6px}
+      .chip{border:2px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;font-weight:600;color:var(--navy);min-height:44px}
+      .chip.on{border-color:var(--teal);background:var(--teal-l)}
+      .stopcock{margin:0;background:var(--bg);border-radius:12px;padding:6px 8px}.stopcock svg{width:100%;height:auto;max-height:150px}.stopcock figcaption{font-size:14.5px}
+      .order-card{border:2px solid var(--navy2);border-radius:12px;padding:10px 12px;background:#fbfdff;font-size:15px}
+      .order-card ul{margin:6px 0;padding-left:18px}.order-head{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:space-between}
+      .badge-sim{background:#fff1d6;color:#7a4a00;border-radius:999px;padding:2px 10px;font-size:12.5px;font-weight:600}
+      details summary{cursor:pointer;color:var(--navy2);font-weight:600}.criteria{font-size:15px;background:var(--bg);border-radius:12px;padding:8px 12px}.criteria ul{margin:6px 0;padding-left:18px}
+      .tappable{cursor:pointer}.draggable{cursor:grab;touch-action:none}.draggable:active{cursor:grabbing}
+      .pulse{pointer-events:none;fill:none;stroke:#f2b705;stroke-width:3;animation:pulse 1.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+      .draw-line{stroke-dashoffset:400;animation:draw .9s ease forwards}.drip{animation:drip 1.6s linear infinite}.drip.fast{animation-duration:.55s}.drip.slow{animation-duration:2.2s}.wave{animation:wave 1.2s linear infinite}.zzz{animation:float 2s ease-in-out infinite}
+      @keyframes pulse{0%,to{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(1.25)}}
+      @keyframes draw{0%{stroke-dashoffset:400}to{stroke-dashoffset:0}}
+      @keyframes drip{0%{transform:translateY(0);opacity:1}80%{opacity:1}to{transform:translateY(18px);opacity:0}}
+      @keyframes wave{0%{transform:translate(0)}to{transform:translate(30px)}}
+      @keyframes float{0%,to{transform:translateY(0)}50%{transform:translateY(-4px)}}
+      @keyframes pop{0%{transform:scale(.97);opacity:0}to{transform:scale(1);opacity:1}}
+      @media (prefers-reduced-motion: reduce){.pulse,.drip,.wave,.zzz,.draw-line,.fb{animation:none!important;stroke-dashoffset:0}}
+      .m4-stage{flex:1;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:12px;padding:12px;align-items:center;overflow:auto}
+      .cylinder-svg{width:100%;height:100%;max-height:calc(100dvh - 90px)}.chart-note.in-panel{display:none}
+      .chart-note{background:#fff;border-radius:12px;border:1px solid var(--line);padding:12px;display:flex;flex-direction:column;gap:6px;font-size:15.5px}
+      .numfield{display:flex;flex-direction:column;gap:4px;font-weight:600}.numrow{display:flex;align-items:center;gap:6px}
+      .numrow input{width:90px;height:44px;font-size:20px;text-align:center;border:2px solid var(--line);border-radius:10px;font-weight:700;color:var(--navy)}
+      .twobox{display:flex;flex-direction:column;gap:10px}.box-locked{background:var(--bg);border-radius:12px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center}
+      .record-form{display:flex;flex-direction:column;gap:8px}.rf{display:flex;flex-direction:column;gap:2px;font-size:14.5px;font-weight:600}
+      .rf select{font:inherit;font-size:15.5px;padding:8px;border-radius:10px;border:2px solid var(--line);min-height:44px;background:#fff}.rf-bad select{border-color:var(--red);background:var(--red-l)}
+      .complete{position:fixed;inset:0;background:#12355b73;display:grid;place-items:center;z-index:50;padding:max(12px,env(safe-area-inset-top,0px)) 12px max(12px,env(safe-area-inset-bottom,0px));animation:pop .3s}
+      .complete-card{position:relative;background:#fff;border-radius:20px;padding:24px;max-width:460px;max-height:calc(var(--app-h) - 24px);overflow-y:auto;width:100%;text-align:center;display:flex;flex-direction:column;gap:10px}
+      .complete-card h2{margin:0}.burst{position:absolute;inset:-40% -10% auto;height:160px;background:radial-gradient(circle,rgba(95,211,198,.35),transparent 60%);pointer-events:none}
+      .home,.page{max-width:980px;margin:0 auto;padding:20px 16px 40px}.hero{text-align:center;padding:18px 0 8px}
+      .hero h1{font-size:clamp(32px,6vw,50px);margin:0;letter-spacing:.5px}.sub{font-size:21px;color:var(--teal-d);font-weight:700;margin:2px 0 12px}
+      .flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;margin:8px 0 14px}
+      .flow-step{background:#e8eef5;color:var(--muted);padding:4px 12px;border-radius:999px;font-size:14.5px;font-weight:600;position:relative}
+      .flow-step.on{background:var(--teal-l);color:var(--teal-d)}.flow-step+.flow-step:before{content:"→";position:absolute;left:-10px;color:var(--muted)}.flow.big .flow-step{font-size:16px}
+      .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin:18px 0}
+      .mcard{text-align:left;background:#fff;border:2px solid var(--line);border-radius:var(--radius);padding:14px 16px;display:flex;flex-direction:column;gap:4px;color:var(--text)}
+      .mcard:hover:not(:disabled){border-color:var(--teal)}.mcard-title{font-weight:700;color:var(--navy);font-size:17.5px}.mcard.locked{opacity:.6;cursor:not-allowed}
+      .lock{font-size:14px;color:var(--amber);font-weight:600}.badges{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px}
+      .badge{border:2px dashed var(--line);border-radius:999px;padding:6px 14px;color:var(--muted);font-weight:600;font-size:15px}
+      .badge.got{border-style:solid;border-color:#f2b705;background:#fff8dd;color:#6b4e00}
+      .switch{display:inline-flex;gap:8px;align-items:center;font-weight:600;min-height:44px;cursor:pointer}.switch input{width:24px;height:24px;accent-color:var(--teal)}
+      .tutorial .tut-title{margin:0;font-size:21px}.sum-top{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+      .sum-stars{background:var(--navy);color:#fff;border-radius:16px;padding:10px 20px;display:flex;gap:6px;align-items:baseline}.sum-stars b{font-size:40px}
+      .skills,.practice{list-style:none;padding:0;display:flex;flex-direction:column;gap:6px}
+      .skills li{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 12px;flex-wrap:wrap}
+      .skills .grow{flex:1;min-width:160px}.skills .ok{color:var(--teal);font-weight:700}.skills .todo{color:var(--muted)}.practice li{background:#fff7e0;border-radius:10px;padding:8px 12px}
+      .rec-table,.map-table{border-collapse:collapse;width:100%;background:#fff;font-size:15px}
+      .rec-table th,.rec-table td,.map-table th,.map-table td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+      .rec-table th{width:38%;background:var(--bg)}.map-table th{background:var(--navy);color:#fff}.table-scroll{overflow-x:auto}.map-table{min-width:640px}
+      .refs li{margin-bottom:8px;word-break:break-word}
+      .case-box{background:#fff;border:2px solid var(--line);border-radius:var(--radius);padding:12px 16px;display:flex;flex-direction:column;gap:8px;margin-top:16px}
+      .case-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}.eyebrow-s{font-size:13px;font-weight:700;color:var(--teal-d);letter-spacing:.3px}.case-body{font-size:15.5px}
+      .case-tag{font-size:12.5px;font-weight:700;color:var(--teal-d);background:var(--teal-l);border-radius:999px;padding:1px 9px;white-space:nowrap}
+      .report-box{background:#fff;border:2px solid var(--teal);border-radius:var(--radius);padding:14px 16px;display:flex;flex-direction:column;gap:10px;margin:18px 0}.report-box h3{margin:0}
+      .rb-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}.rb-fields label{display:flex;flex-direction:column;gap:3px;font-weight:600;font-size:14.5px}
+      .rb-fields input,.code-in,.code-out{font:inherit;border:2px solid var(--line);border-radius:10px;padding:8px 10px;min-height:44px;background:#fff;color:var(--text)}
+      .code-out,.code-in{width:100%;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;word-break:break-all;resize:vertical}
+      .page.wide{max-width:1180px}.t-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+      .t-stats div{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 14px;display:flex;flex-direction:column}
+      .t-stats b{font-size:28px;color:var(--navy);font-variant-numeric:tabular-nums}.t-stats span{color:var(--muted);font-size:14px}
+      .t-tags{background:#fff7e0;border-radius:12px;padding:10px 14px;margin-bottom:12px}.t-tags ul{margin:6px 0 0;padding-left:20px}
+      .t-table{min-width:980px;font-size:14px}.t-table td.c{text-align:center;white-space:nowrap}
+      .login-page{max-width:460px;margin:0 auto;padding:24px max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:14px}
+      .login-hero{text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px}.login-hero h1{margin:6px 0 0;font-size:34px}.login-hero .sub{margin:0}
+      .login-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 8px 24px #12355b14}.login-card h2{margin:0;font-size:21px}
+      .tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--bg);border-radius:12px;padding:4px;gap:4px}
+      .tab{border:0;background:transparent;border-radius:9px;padding:9px 6px;font-weight:700;color:var(--muted);min-height:44px}
+      .tab.on{background:#fff;color:var(--navy);box-shadow:0 1px 4px #00000014}
+      .login-form{display:flex;flex-direction:column;gap:10px}.login-form label{display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:15px}
+      .login-form input{font:inherit;font-size:16px;border:2px solid var(--line);border-radius:10px;padding:9px 12px;min-height:46px;background:#fff;color:var(--text);width:100%}
+      .login-form input:focus{outline:none;border-color:var(--sky)}
+      .pw-row{display:flex;gap:6px;align-items:center}.pw-row input{flex:1;min-width:0}.btn.block{width:100%}
+      .privacy{color:var(--muted);margin:0;border-top:1px dashed var(--line);padding-top:10px}.credit-line{text-align:center;margin:0}.center{text-align:center}
+      .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+      .acct{position:relative}.acct-btn{display:inline-flex;align-items:center;gap:6px;max-width:160px}.acct-btn .lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+      .acct-btn .dot{width:10px;height:10px;border-radius:50%;background:#9fb0c2;flex:none}
+      .acct-btn.st-ok .dot{background:#3ddc97}.acct-btn.st-busy .dot{background:#8fd3ff;animation:pulse 1s infinite}.acct-btn.st-warn .dot{background:#f2b705}
+      .acct-pop{position:absolute;right:0;top:calc(100% + 8px);width:min(290px,calc(100vw - 24px));background:#fff;color:var(--text);border-radius:14px;box-shadow:0 12px 30px #0003;padding:14px;display:flex;flex-direction:column;gap:8px;z-index:40}
+      .acct-pop .btn{align-self:flex-start}.sync-line{font-size:14.5px;border-radius:10px;padding:6px 10px;background:var(--teal-l);color:#0b5b53}
+      .sync-line.st-warn{background:#fff4dc;color:#7a4a00}.sync-line.st-busy{background:var(--sky-l);color:var(--navy)}
+      .report-sub{display:flex;flex-direction:column;gap:10px;border-top:1px dashed var(--line);padding-top:10px}
+      .snd{display:inline-flex;align-items:center;gap:6px}
+      html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+      button,.chip,.zbtn,.nbtn,.card-btn,select,a{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+      @media (pointer:coarse){input,textarea,select,.code-out,.code-in{font-size:16px!important}}
+      @media (orientation:portrait) and (max-width:1024px){.mission{grid-template-columns:1fr;grid-template-rows:minmax(0,var(--stage-h,46%)) minmax(0,1fr)}.stage{border-bottom:1px solid var(--line)}.panel{border-left:0;overflow-y:auto;padding:12px 14px;gap:8px}.mtitle{font-size:17px}.goal{font-size:15px}.m4-stage{grid-template-columns:1fr 1fr;padding:8px;gap:8px}.chart-note{font-size:14px;padding:8px}}
+      @media (orientation:portrait) and (min-width:700px) and (max-width:1024px){.mission{--stage-h:52%}.panel{padding:14px 20px}.controls{max-width:640px}.cards{display:grid;grid-template-columns:1fr}}
+      @media (orientation:portrait) and (max-width:560px){:root{font-size:16px}.mission{--stage-h:44%}.topbar{padding:0 max(10px,env(safe-area-inset-right,0px)) 0 max(10px,env(safe-area-inset-left,0px))}.brand span{font-size:16px}.zoombar{top:6px;right:6px}.zbtn{padding:4px 10px;font-size:14px;min-height:36px}.m4-stage{grid-template-columns:1fr}.chart-note.in-stage{display:none}.chart-note.in-panel{display:flex;font-size:14.5px;padding:8px 10px;gap:2px}.goal{display:none}.nudge{grid-template-columns:52px 1fr 52px}.nbtn{height:48px}.card-btn{padding:10px 12px;min-height:48px;font-size:15.5px}.tools .btn{padding:6px 12px;min-height:40px;font-size:15px}}
+      @media (orientation:portrait) and (max-height:700px) and (max-width:560px){.mission{--stage-h:40%}.mtitle{font-size:16px}.instr{font-size:15px}.stopcock svg{max-height:110px}}
+      @media (orientation:landscape) and (max-height:560px){:root{--top-h:44px;font-size:15px}.topbar{height:44px;padding:0 max(12px,env(safe-area-inset-right,0px)) 0 max(12px,env(safe-area-inset-left,0px))}.topbar .btn.sm{min-height:32px}.mission{grid-template-columns:minmax(0,1fr) minmax(260px,42%)}.panel{padding:8px 12px;gap:6px}.mtitle{font-size:15.5px}.goal{display:none}.instr{font-size:14.5px}.nbtn{height:42px}.nudge{grid-template-columns:46px 1fr 46px}.card-btn{padding:8px 10px;min-height:42px;font-size:14.5px}.btn{min-height:40px;padding:7px 14px}.zbtn{min-height:34px;padding:3px 10px;font-size:13.5px}.m4-stage{grid-template-columns:1fr;padding:4px}.chart-note.in-stage{display:none}.chart-note.in-panel{display:flex;font-size:14px;padding:6px 10px;gap:2px}.stopcock svg{max-height:96px}.hero{padding-top:6px}}
+      @media (max-width:700px){.snd .lbl{display:none}.snd{padding:4px 10px;min-width:40px;justify-content:center}}
+      @media (max-width:560px){.snd .lbl{display:none}.snd{padding:4px 9px}.top-right{gap:6px}}
+      @media (max-width:380px){.brand span{display:none}}
+      @media (hover:none){.btn:hover,.card-btn:hover:not(:disabled),.mcard:hover:not(:disabled){border-color:var(--line);background:inherit}.btn.primary:hover{background:var(--teal)}}
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="module">
+      import React, { useState, useEffect, useRef, useMemo, useCallback, createContext, useContext, StrictMode, Fragment } from "https://esm.sh/react@18.3.1";
+      import { createRoot } from "https://esm.sh/react-dom@18.3.1/client";
+
+      const h = React.createElement;
+
+      const CASES = [
+        {
+          id: "c1",
+          label: "กรณี 1",
+          caseInfo: {
+            patient: "ผู้ป่วยจำลอง ชาย อายุ 54 ปี",
+            situation: "วันแรกหลังผ่าตัดกะโหลกศีรษะเอาเนื้องอกออก ใส่สาย EVD ทาง frontal ด้านขวา",
+            system: "ชุด EVD ระบายแบบแขวนเสา มีแผงสเกล cmH₂O กระเปาะหยด กระบอกตวง CSF หน่วย mL และต่อ transducer ภายนอกชนิดทั่วไป"
+          },
+          order: {
+            label: "คำสั่งการรักษา (สมมติ)",
+            disclaimer: "คำสั่งสมมติของกรณีนี้ ไม่ใช่ค่ามาตรฐานสำหรับผู้ป่วยทุกราย",
+            reference: "tragus / external auditory meatus (EAM)",
+            referenceShort: "tragus/EAM",
+            position: "นอนหงาย ศีรษะตรงแนวกลาง หัวเตียง 30°",
+            hobDeg: 30,
+            drainMode: "OPEN_TO_DRAIN",
+            drainModeText: "เปิดระบายต่อเนื่อง",
+            drainLevelCm: 15,
+            drainLevelText: "ตั้งระดับระบาย +15 cmH₂O เหนือจุดอ้างอิงที่กำหนด",
+            positionChangeRule: "ก่อนเปลี่ยนท่า: ปิดทางไปกระเปาะระบายชั่วคราว หลังเปลี่ยนท่า: จัดจุดศูนย์ใหม่ ตรวจระดับ แล้วคืนสถานะเปิดระบายตามคำสั่ง",
+            reportCriteria: [
+              "ระดับความรู้สึกตัวลดลงจากเดิม (เช่น GCS ลด ≥ 2 คะแนน)",
+              "CSF > 20 mL ใน 1 ชั่วโมง",
+              "ไม่มี CSF ระบาย ร่วมกับอาการเปลี่ยนแปลง",
+              "ลักษณะ CSF เปลี่ยนจากข้อมูลพื้นฐาน หรือมีไข้",
+              "ระบบรั่ว หลุด หรือสงสัยปนเปื้อน",
+              "ICP > 20 mmHg ต่อเนื่อง > 5 นาที (ด่านเสริม)"
+            ],
+            reportCriteriaNote: "เกณฑ์รายงานเฉพาะกรณีนี้ ไม่ใช่เกณฑ์สากล"
+          },
+          mission1: { explain: "จุดนี้ใช้เป็นจุดอ้างอิงภายนอกของระบบในท่าที่กำหนด" },
+          mission2: { zeroStartOffsetCm: -6, drainStartOffsetCm: 8, snapRangeCm: 1, stepCm: 0.5 },
+          mission3: {
+            change: { type: "hob", fromHobDeg: 30, toHobDeg: 45, liftCm: 0 },
+            orderText: "คำสั่งสมมติ: ปรับหัวเตียงจาก 30° เป็น 45° ตามคำสั่งการรักษาใหม่",
+            actionLabel: "ปรับหัวเตียงเป็น 45°",
+            cards: [
+              { id: "check", text: "ตรวจคำสั่งและสถานะระบบก่อนเปลี่ยนท่า", correct: true, feedback: "ถูกต้อง เริ่มจากรู้ว่าคำสั่งคืออะไร และตอนนี้ระบบอยู่ในสถานะใด" },
+              { id: "relevel", text: "จัดระดับใหม่หลังเปลี่ยนท่า", correct: false, feedback: "จำเป็นแต่ยังไม่ใช่ขั้นแรก ต้องตรวจคำสั่งและจัดการทางระบายก่อนขยับเตียง" },
+              { id: "leave", text: "ปล่อยชุดระบายไว้ที่เดิมโดยไม่ตรวจ", correct: false, feedback: "ไม่ปลอดภัย ศีรษะจะสูงขึ้นแต่ชุดระบายอยู่ที่เดิม ระดับระบายจริงจะต่ำกว่าที่สั่ง เสี่ยงระบายมากเกิน" }
+            ]
+          },
+          mission4: {
+            prevTime: "09.00", currTime: "10.00", prevCumulativeMl: 12, currCumulativeMl: 20, emptiedBetween: false, cylinderMaxMl: 30,
+            csfAppearance: "ใส สีเหลืองฟางอ่อน",
+            assessmentText: "10.00 น.: ตื่นดี GCS 15 เท่าเดิม ไม่ปวดศีรษะเพิ่ม",
+            recordFields: [
+              { id: "time", label: "เวลา", options: ["10.00 น.", "09.00 น.", "ไม่ระบุเวลา"], answer: 0 },
+              { id: "position", label: "ท่าผู้ป่วย", options: ["นอนหงาย ศีรษะตรง หัวเตียง 45°", "นอนตะแคงขวา", "นั่งห้อยขา"], answer: 0 },
+              { id: "reference", label: "จุดอ้างอิง", options: ["หน้าผาก", "tragus/EAM", "ระดับหัวใจ"], answer: 1 },
+              { id: "level", label: "ระดับระบายและหน่วย", options: ["+15 mmHg", "15 mL", "+15 cmH₂O เหนือ tragus/EAM"], answer: 2 },
+              { id: "status", label: "สถานะระบบ", options: ["เปิดระบายต่อเนื่องตามคำสั่ง", "ปิดทางระบาย", "ไม่ได้ตรวจ"], answer: 0 },
+              { id: "volume", label: "ปริมาณ CSF และช่วงเวลา", options: ["20 mL ช่วง 09.00–10.00 น.", "8 mL ช่วง 09.00–10.00 น. (สะสม 20 mL)", "8 cmH₂O"], answer: 1 },
+              { id: "appearance", label: "ลักษณะ CSF", options: ["ใส สีเหลืองฟางอ่อน เหมือนเดิม", "ขุ่น", "แดงสด"], answer: 0 },
+              { id: "symptom", label: "อาการ/การเปลี่ยนแปลงสำคัญ", options: ["ไม่ได้ประเมิน", "ตื่นดี GCS 15 เท่าเดิม ไม่ปวดศีรษะเพิ่ม", "ซึมลง"], answer: 1 }
+            ]
+          },
+          icp: { zeroStartOffsetCm: 2, icpMmHg: 12 }
+        },
+        {
+          id: "c2",
+          label: "กรณี 2",
+          caseInfo: {
+            patient: "ผู้ป่วยจำลอง หญิง อายุ 46 ปี",
+            situation: "วันที่ 2 หลังผ่าตัดหนีบหลอดเลือดสมองโป่งพอง (aneurysm clipping) จากเลือดออกใต้เยื่อหุ้มสมอง ใส่สาย EVD ทาง frontal ด้านขวา",
+            system: "ชุด EVD ระบายแบบแขวนเสา มีแผงสเกล cmH₂O กระเปาะหยด กระบอกตวง CSF หน่วย mL และต่อ transducer ภายนอกชนิดทั่วไป"
+          },
+          order: {
+            label: "คำสั่งการรักษา (สมมติ)",
+            disclaimer: "คำสั่งสมมติของกรณีนี้ ไม่ใช่ค่ามาตรฐานสำหรับผู้ป่วยทุกราย",
+            reference: "tragus / external auditory meatus (EAM)",
+            referenceShort: "tragus/EAM",
+            position: "นอนหงาย ศีรษะตรงแนวกลาง หัวเตียง 30°",
+            hobDeg: 30,
+            drainMode: "OPEN_TO_DRAIN",
+            drainModeText: "เปิดระบายต่อเนื่อง",
+            drainLevelCm: 10,
+            drainLevelText: "ตั้งระดับระบาย +10 cmH₂O เหนือจุดอ้างอิงที่กำหนด",
+            positionChangeRule: "ก่อนเปลี่ยนท่าหรือปรับความสูงเตียง: ปิดทางไปกระเปาะระบายชั่วคราว หลังปรับ: จัดจุดศูนย์ใหม่ ตรวจระดับ แล้วคืนสถานะเปิดระบายตามคำสั่ง",
+            reportCriteria: [
+              "ระดับความรู้สึกตัวลดลงจากเดิม (เช่น GCS ลด ≥ 2 คะแนน)",
+              "CSF > 15 mL ใน 1 ชั่วโมง",
+              "ไม่มี CSF ระบาย ร่วมกับอาการเปลี่ยนแปลง",
+              "ลักษณะ CSF เปลี่ยนจากข้อมูลพื้นฐาน หรือมีไข้",
+              "ระบบรั่ว หลุด หรือสงสัยปนเปื้อน",
+              "ICP > 20 mmHg ต่อเนื่อง > 5 นาที (ด่านเสริม)"
+            ],
+            reportCriteriaNote: "เกณฑ์รายงานเฉพาะกรณีนี้ ไม่ใช่เกณฑ์สากล"
+          },
+          mission1: { explain: "จุดนี้ใช้เป็นจุดอ้างอิงภายนอกของระบบในท่าที่กำหนด" },
+          mission2: { zeroStartOffsetCm: 5, drainStartOffsetCm: 18, snapRangeCm: 1, stepCm: 0.5 },
+          mission3: {
+            change: { type: "lift", fromHobDeg: 30, toHobDeg: 30, liftCm: 15 },
+            orderText: "ต้องทำแผลและเช็ดตัว: ยกเตียงทั้งเตียงสูงขึ้น 15 cm โดยหัวเตียงคงที่ 30°",
+            actionLabel: "ยกเตียงสูงขึ้น 15 cm",
+            cards: [
+              { id: "check", text: "ตรวจคำสั่งและสถานะระบบก่อนยกเตียง", correct: true, feedback: "ถูกต้อง การปรับความสูงเตียงก็ทำให้จุดอ้างอิงเปลี่ยน ต้องตรวจก่อนเหมือนการเปลี่ยนท่า" },
+              { id: "relevel", text: "จัดระดับใหม่หลังยกเตียง", correct: false, feedback: "จำเป็นแต่ยังไม่ใช่ขั้นแรก ต้องตรวจคำสั่งและจัดการทางระบายก่อนยกเตียง" },
+              { id: "leave", text: "หัวเตียงไม่เปลี่ยน จึงไม่ต้องตรวจชุดระบาย", correct: false, feedback: "ไม่ปลอดภัย ยกเตียงแล้วศีรษะสูงขึ้นแต่ชุดระบายอยู่ที่เดิม ระดับระบายจริงจะต่ำกว่าที่สั่ง เสี่ยงระบายมากเกิน" }
+            ]
+          },
+          mission4: {
+            prevTime: "13.00", currTime: "14.00", prevCumulativeMl: 6, currCumulativeMl: 17, emptiedBetween: false, cylinderMaxMl: 30,
+            csfAppearance: "สีเหลืองเข้ม (xanthochromia)",
+            assessmentText: "14.00 น.: ตื่นดี GCS 14 เท่าเดิม ปวดศีรษะเล็กน้อยเท่าเดิม",
+            recordFields: [
+              { id: "time", label: "เวลา", options: ["13.00 น.", "14.00 น.", "ไม่ระบุเวลา"], answer: 1 },
+              { id: "position", label: "ท่าผู้ป่วย", options: ["นอนตะแคงซ้าย", "นั่งห้อยขา", "นอนหงาย ศีรษะตรง หัวเตียง 30°"], answer: 2 },
+              { id: "reference", label: "จุดอ้างอิง", options: ["tragus/EAM", "ระดับหัวใจ", "หน้าผาก"], answer: 0 },
+              { id: "level", label: "ระดับระบายและหน่วย", options: ["+10 cmH₂O เหนือ tragus/EAM", "+10 mmHg", "10 mL"], answer: 0 },
+              { id: "status", label: "สถานะระบบ", options: ["ปิดทางระบาย", "เปิดระบายต่อเนื่องตามคำสั่ง", "ไม่ได้ตรวจ"], answer: 1 },
+              { id: "volume", label: "ปริมาณ CSF และช่วงเวลา", options: ["11 cmH₂O", "17 mL ช่วง 13.00–14.00 น.", "11 mL ช่วง 13.00–14.00 น. (สะสม 17 mL)"], answer: 2 },
+              { id: "appearance", label: "ลักษณะ CSF", options: ["ใส ไม่มีสี", "สีเหลืองเข้ม (xanthochromia) เหมือนเดิม", "ขุ่น"], answer: 1 },
+              { id: "symptom", label: "อาการ/การเปลี่ยนแปลงสำคัญ", options: ["ตื่นดี GCS 14 เท่าเดิม ปวดศีรษะเล็กน้อยเท่าเดิม", "ไม่ได้ประเมิน", "ซึมลง"], answer: 0 }
+            ]
+          },
+          icp: { zeroStartOffsetCm: -1.5, icpMmHg: 9 }
+        },
+        {
+          id: "c3",
+          label: "กรณี 3",
+          caseInfo: {
+            patient: "ผู้ป่วยจำลอง ชาย อายุ 63 ปี",
+            situation: "วันที่ 3 หลังผ่าตัดระบายก้อนเลือดในสมอง มีภาวะน้ำคั่งในโพรงสมอง (hydrocephalus) ใส่สาย EVD ทาง frontal ด้านขวา",
+            system: "ชุด EVD ระบายแบบแขวนเสา มีแผงสเกล cmH₂O กระเปาะหยด กระบอกตวง CSF หน่วย mL และต่อ transducer ภายนอกชนิดทั่วไป"
+          },
+          order: {
+            label: "คำสั่งการรักษา (สมมติ)",
+            disclaimer: "คำสั่งสมมติของกรณีนี้ ไม่ใช่ค่ามาตรฐานสำหรับผู้ป่วยทุกราย",
+            reference: "tragus / external auditory meatus (EAM)",
+            referenceShort: "tragus/EAM",
+            position: "นอนหงาย ศีรษะตรงแนวกลาง หัวเตียง 30° (ยกเป็น 45° ได้ระหว่างรับประทานอาหาร)",
+            hobDeg: 30,
+            drainMode: "OPEN_TO_DRAIN",
+            drainModeText: "เปิดระบายต่อเนื่อง",
+            drainLevelCm: 20,
+            drainLevelText: "ตั้งระดับระบาย +20 cmH₂O เหนือจุดอ้างอิงที่กำหนด",
+            positionChangeRule: "ก่อนเปลี่ยนท่า: ปิดทางไปกระเปาะระบายชั่วคราว หลังเปลี่ยนท่า: จัดจุดศูนย์ใหม่ ตรวจระดับ แล้วคืนสถานะเปิดระบายตามคำสั่ง",
+            reportCriteria: [
+              "ระดับความรู้สึกตัวลดลงจากเดิม (เช่น GCS ลด ≥ 2 คะแนน)",
+              "CSF > 20 mL ใน 1 ชั่วโมง",
+              "ไม่มี CSF ระบาย ร่วมกับอาการเปลี่ยนแปลง",
+              "ลักษณะ CSF เปลี่ยนจากข้อมูลพื้นฐาน หรือมีไข้",
+              "ระบบรั่ว หลุด หรือสงสัยปนเปื้อน",
+              "ICP > 20 mmHg ต่อเนื่อง > 5 นาที (ด่านเสริม)"
+            ],
+            reportCriteriaNote: "เกณฑ์รายงานเฉพาะกรณีนี้ ไม่ใช่เกณฑ์สากล"
+          },
+          mission1: { explain: "จุดนี้ใช้เป็นจุดอ้างอิงภายนอกของระบบในท่าที่กำหนด" },
+          mission2: { zeroStartOffsetCm: -3, drainStartOffsetCm: 12, snapRangeCm: 1, stepCm: 0.5 },
+          mission3: {
+            change: { type: "hob", fromHobDeg: 45, toHobDeg: 30, liftCm: 0 },
+            orderText: "รับประทานอาหารเสร็จแล้ว: ปรับหัวเตียงจาก 45° กลับเป็น 30° ตามคำสั่ง",
+            actionLabel: "ลดหัวเตียงเป็น 30°",
+            cards: [
+              { id: "check", text: "ตรวจคำสั่งและสถานะระบบก่อนปรับหัวเตียง", correct: true, feedback: "ถูกต้อง ไม่ว่าจะยกหรือลดหัวเตียง ต้องตรวจคำสั่งและสถานะระบบก่อน" },
+              { id: "relevel", text: "จัดระดับใหม่หลังลดหัวเตียง", correct: false, feedback: "จำเป็นแต่ยังไม่ใช่ขั้นแรก ต้องตรวจคำสั่งและจัดการทางระบายก่อนขยับเตียง" },
+              { id: "leave", text: "ลดหัวเตียงทันทีเพราะเป็นการกลับสู่ท่าเดิม", correct: false, feedback: "ไม่ปลอดภัย ลดหัวเตียงแล้วศีรษะต่ำลงแต่ชุดระบายอยู่ที่เดิม ระดับระบายจริงจะสูงกว่าที่สั่ง อาจระบายน้อยกว่าที่ต้องการ" }
+            ]
+          },
+          mission4: {
+            prevTime: "18.00", currTime: "19.00", prevCumulativeMl: 4, currCumulativeMl: 13, emptiedBetween: false, cylinderMaxMl: 30,
+            csfAppearance: "ใส ไม่มีสี",
+            assessmentText: "19.00 น.: ซึมเล็กน้อยเท่าเดิม GCS 13 (E3V4M6) คงที่",
+            recordFields: [
+              { id: "time", label: "เวลา", options: ["ไม่ระบุเวลา", "18.00 น.", "19.00 น."], answer: 2 },
+              { id: "position", label: "ท่าผู้ป่วย", options: ["นอนหงาย ศีรษะตรง หัวเตียง 30°", "นอนหงาย หัวเตียง 45° (ระหว่างรับประทานอาหาร)", "นอนตะแคงขวา"], answer: 0 },
+              { id: "reference", label: "จุดอ้างอิง", options: ["ระดับหัวใจ", "หน้าผาก", "tragus/EAM"], answer: 2 },
+              { id: "level", label: "ระดับระบายและหน่วย", options: ["20 mL", "+20 cmH₂O เหนือ tragus/EAM", "+20 mmHg"], answer: 1 },
+              { id: "status", label: "สถานะระบบ", options: ["เปิดระบายต่อเนื่องตามคำสั่ง", "ไม่ได้ตรวจ", "ปิดทางระบาย"], answer: 0 },
+              { id: "volume", label: "ปริมาณ CSF และช่วงเวลา", options: ["9 mL ช่วง 18.00–19.00 น. (สะสม 13 mL)", "13 mL ช่วง 18.00–19.00 น.", "9 cmH₂O"], answer: 0 },
+              { id: "appearance", label: "ลักษณะ CSF", options: ["แดงสด", "ขุ่น", "ใส ไม่มีสี เหมือนเดิม"], answer: 2 },
+              { id: "symptom", label: "อาการ/การเปลี่ยนแปลงสำคัญ", options: ["ไม่ได้ประเมิน", "ซึมเล็กน้อยเท่าเดิม GCS 13 (E3V4M6) คงที่", "ตื่นดี GCS 15"], answer: 1 }
+            ]
+          },
+          icp: { zeroStartOffsetCm: 2.5, icpMmHg: 14 }
+        }
+      ];
+
+      const ICP_SHARED = {
+        systemType: "EVD ต่อ transducer ภายนอกชนิดทั่วไป (fluid-coupled external transducer)",
+        zeroRule: "zero ตามคู่มืออุปกรณ์และแนวปฏิบัติของหน่วย (กรณีนี้: หลังเปลี่ยนท่า)",
+        reportText: "รายงานเมื่อ ICP > 20 mmHg ต่อเนื่อง > 5 นาที (เกณฑ์สมมติของกรณีนี้)"
+      };
+
+      const EVENTS = [
+        {
+          id: "drowsy", title: "ผู้ป่วยซึมลงจากเดิม", cue: "ปลุกตื่นยากขึ้น GCS ลดลง 3 คะแนนจากการประเมินครั้งก่อน", visual: { drowsy: true },
+          options: [
+            { text: "ลดระดับชุดระบายลงเล็กน้อยให้ CSF ไหลมากขึ้น แล้วประเมินระบบประสาทซ้ำในอีก 15 นาที", correct: false, why: "ไม่ปรับระดับเองนอกคำสั่ง และ GCS ลด 3 คะแนนเข้าเกณฑ์ต้องรายงานทันที" },
+            { text: "ประเมินระบบประสาทและสัญญาณชีพซ้ำทันที ตรวจระดับและสถานะระบบ แล้วรายงานทีมตามเกณฑ์", correct: true },
+            { text: "บันทึกค่า GCS ลงแบบฟอร์ม ประเมินซ้ำในรอบถัดไปตามเวลา และรายงานทีมถ้ายังลดลงอีก", correct: false, why: "GCS ลด 3 คะแนนเข้าเกณฑ์รายงานของกรณีนี้แล้ว ต้องรายงานทันที ไม่รอรอบถัดไป" }
+          ]
+        },
+        {
+          id: "surge", title: "ปริมาณ CSF เพิ่มขึ้นฉับพลัน", cue: "ชั่วโมงนี้ CSF 26 mL (ชั่วโมงก่อน 8 mL)", visual: { highFlow: true },
+          options: [
+            { text: "ประเมินผู้ป่วยแล้วลดระดับชุดระบายลงเพื่อให้การระบายต่อเนื่อง จากนั้นรายงานทีมในเวรนี้", correct: false, why: "การลดระดับจะยิ่งเสี่ยงระบายมากเกิน และเป็นการปรับนอกคำสั่ง" },
+            { text: "บันทึกว่าระบายได้ดี ตรวจลักษณะ CSF และติดตามปริมาณในชั่วโมงถัดไปก่อนตัดสินใจรายงาน", correct: false, why: "26 mL เกินเกณฑ์รายงานของกรณีนี้ และอาจเป็นการระบายมากเกิน ต้องรายงานทันที" },
+            { text: "ประเมินผู้ป่วย ตรวจว่าจุดศูนย์และระดับระบายยังตรงคำสั่งหรือไม่ แล้วรายงานทีมทันที", correct: true }
+          ]
+        },
+        {
+          id: "noflow", title: "ไม่มี CSF ระบาย ร่วมกับอาการผิดปกติ", cue: "2 ชั่วโมงไม่มี CSF ระบาย ผู้ป่วยปวดศีรษะมากขึ้น", visual: { noFlow: true },
+          options: [
+            { text: "ตรวจสถานะทางระบาย สายพับ และระดับ โดยไม่รีดหรือ flush สาย ประเมินผู้ป่วย แล้วรายงานทีมทันที", correct: true },
+            { text: "ประเมินผู้ป่วยแล้ว flush สายด้วยน้ำเกลือปริมาณเล็กน้อยเพื่อแก้การอุดตัน จากนั้นรายงานทีม", correct: false, why: "ไม่ flush สายเอง และการไม่มี CSF ไหลไม่ได้แปลว่าสายอุดตันเสมอ" },
+            { text: "ลดระดับชุดระบายลงชั่วคราวเพื่อเร่งการไหล ประเมินผู้ป่วย และรายงานทีมถ้ายังไม่ไหล", correct: false, why: "ในเกมนี้ไม่ลดระดับเองเพื่อเร่งการไหล การตรวจด้วยวิธีนี้ต้องเป็นไปตามคำสั่งและแนวปฏิบัติของหน่วย" }
+          ]
+        },
+        {
+          id: "kink", title: "สายภายนอกพับงอ", cue: "พบสายช่วงข้างหมอนพับงอ มองเห็นได้ชัด", visual: { kink: true },
+          options: [
+            { text: "ถอดข้อต่อใกล้จุดที่พับเพื่อตรวจว่ามีลิ่มเลือดหรือไม่ ต่อกลับให้แน่น แล้วประเมินผู้ป่วยและรายงาน", correct: false, why: "ห้ามถอดข้อต่อ เสี่ยงติดเชื้อและระบบหลุด" },
+            { text: "รีดสายช่วงที่พับเบา ๆ ให้ CSF ไหลผ่าน แล้วประเมินผู้ป่วยและบันทึกการไหลในชั่วโมงนี้", correct: false, why: "ไม่รีดสาย EVD แค่จัดสายภายนอกที่พับให้ตรงก็พอ" },
+            { text: "จัดสายภายนอกที่พับให้ตรงอย่างนุ่มนวล ไม่ถอดข้อต่อ ประเมินผู้ป่วยและการไหล แล้วบันทึกและแจ้งทีม", correct: true }
+          ]
+        },
+        {
+          id: "leak", title: "มีรอยรั่วหรือระบบหลุด", cue: "พบ CSF ซึมที่ข้อต่อ และข้อต่อหลวมหลุดออกจากกัน", visual: { leak: true },
+          options: [
+            { text: "เช็ดข้อต่อด้วยแอลกอฮอล์แล้วต่อกลับให้แน่น ประเมินผู้ป่วย และบันทึกว่าระบบกลับมาทำงานแล้ว", correct: false, why: "ไม่ต่อกลับเอง ปลายสายอาจปนเปื้อนแล้ว ต้องปิดทางและรายงานทันที" },
+            { text: "ปิดทางด้านผู้ป่วยทันทีตามแนวปฏิบัติ ป้องกันการปนเปื้อน ประเมินผู้ป่วย และรายงานทีมทันที", correct: true },
+            { text: "ปล่อยระบบเปิดไว้ให้ CSF ไหลลงผ้ารองเพื่อประเมินปริมาณ แล้วรายงานทีมเมื่อครบชั่วโมง", correct: false, why: "ระบบหลุดต้องปิดทางด้านผู้ป่วยทันทีและรายงานทันที ไม่รอครบชั่วโมง" }
+          ]
+        },
+        {
+          id: "color", title: "ลักษณะ CSF เปลี่ยน", cue: "CSF ขุ่นขึ้นจากข้อมูลพื้นฐาน และผู้ป่วยมีไข้ 38.6 °C", visual: { cloudy: true },
+          options: [
+            { text: "เก็บ CSF จากช่องในระบบเพื่อส่งตรวจทันที ประเมินผู้ป่วย แล้วรายงานผลให้ทีมทราบภายหลัง", correct: false, why: "ไม่เก็บตัวอย่างหรือเปิดระบบเองถ้าไม่มีคำสั่ง ต้องเป็นไปตามแนวปฏิบัติของหน่วย" },
+            { text: "ให้ยาลดไข้ตามแผนเดิม ประเมินอุณหภูมิซ้ำในหนึ่งชั่วโมง และบันทึกลักษณะ CSF ไว้ในเวรนี้", correct: false, why: "CSF ขุ่นร่วมกับไข้เข้าเกณฑ์รายงานของกรณีนี้ ต้องรายงานทันที" },
+            { text: "ประเมินผู้ป่วยและอาการติดเชื้อ บันทึกลักษณะ CSF เทียบข้อมูลพื้นฐาน แล้วรายงานทีมทันที", correct: true }
+          ]
+        }
+      ];
+
+      const GAME_DATA = { cases: CASES, icpShared: ICP_SHARED, events: EVENTS, eventsPerRound: 3 };
+      const CASE_IDS = CASES.map(c => c.id);
+      const getCase = id => {
+        const c = CASES.find(x => x.id === id) ?? CASES[0];
+        return { ...c, events: EVENTS, eventsPerRound: 3, icp: { ...c.icp, ...ICP_SHARED } };
+      };
+      const pickOtherCase = (cur, rand = Math.random) => {
+        const list = CASE_IDS.filter(x => x !== cur);
+        const pool = list.length ? list : CASE_IDS;
+        return pool[Math.floor(rand() * pool.length)];
+      };
+      const CaseCtx = createContext(getCase(CASE_IDS[0]));
+      const useCase = () => useContext(CaseCtx);
+
+      // Sound
+      let audioCtx = null, masterGain = null, soundOn = true, musicOn = false, musicTimer = null, musicBus = null, lastTick = 0;
+      function ensureAudio() {
+        try {
+          if (!audioCtx) {
+            const Ctx = window.AudioContext || window.webkitAudioContext;
+            if (!Ctx) return null;
+            audioCtx = new Ctx();
+            masterGain = audioCtx.createGain();
+            masterGain.gain.value = 0.9;
+            masterGain.connect(audioCtx.destination);
+          }
+          if (audioCtx.state === "suspended") audioCtx.resume();
+          return audioCtx;
+        } catch { return null; }
+      }
+      function playTone(freq, t, dur, opts = {}) {
+        if (!audioCtx || !masterGain) return;
+        const osc = audioCtx.createOscillator(), g = audioCtx.createGain();
+        osc.type = opts.type ?? "sine";
+        osc.frequency.setValueAtTime(freq, t);
+        if (opts.to) osc.frequency.exponentialRampToValueAtTime(opts.to, t + dur);
+        const vol = opts.vol ?? 0.08, atk = opts.attack ?? 0.01;
+        g.gain.setValueAtTime(1e-4, t);
+        g.gain.exponentialRampToValueAtTime(vol, t + atk);
+        g.gain.exponentialRampToValueAtTime(1e-4, t + dur);
+        osc.connect(g).connect(opts.dest ?? masterGain);
+        osc.start(t); osc.stop(t + dur + 0.05);
+      }
+      const CHORDS = [[261.63, 329.63, 392], [220, 261.63, 329.63], [174.61, 220, 261.63], [196, 246.94, 293.66]];
+      function startMusic() {
+        const ctx = ensureAudio();
+        if (!ctx || !masterGain || musicTimer !== null) return;
+        musicBus = ctx.createGain(); musicBus.gain.value = 1e-4;
+        const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 900;
+        musicBus.connect(lp).connect(masterGain);
+        musicBus.gain.exponentialRampToValueAtTime(0.5, ctx.currentTime + 1.5);
+        let step = 0;
+        const tick = () => {
+          if (!audioCtx || !musicBus) return;
+          const now = audioCtx.currentTime + 0.05, ch = CHORDS[step % CHORDS.length];
+          ch.forEach(f => playTone(f, now, 4.2, { vol: 0.022, attack: 1.2, dest: musicBus }));
+          playTone(ch[step * 2 % 3] * 2, now + 1, 1.6, { type: "triangle", vol: 0.012, attack: 0.3, dest: musicBus });
+          step++;
+        };
+        tick(); musicTimer = window.setInterval(tick, 4000);
+      }
+      function stopMusic() {
+        if (musicTimer !== null) { clearInterval(musicTimer); musicTimer = null; }
+        if (audioCtx && musicBus) {
+          const b = musicBus;
+          b.gain.exponentialRampToValueAtTime(1e-4, audioCtx.currentTime + 0.6);
+          setTimeout(() => b.disconnect(), 800);
+        }
+        musicBus = null;
+      }
+      function sfx(name, opts = {}) {
+        if (!soundOn) return;
+        const ctx = ensureAudio();
+        if (!ctx || !masterGain) return;
+        const t = ctx.currentTime + 0.01;
+        if (name === "tap") playTone(880, t, 0.06, { type: "triangle", vol: 0.035 });
+        else if (name === "page") playTone(520, t, 0.09, { type: "triangle", vol: 0.04, to: 700 });
+        else if (name === "tick") { const n = performance.now(); if (n - lastTick < 45) return; lastTick = n; playTone(1500, t, 0.03, { type: "square", vol: 0.018 }); }
+        else if (name === "align") { playTone(784, t, 0.18, { vol: 0.07 }); playTone(1175, t + 0.08, 0.3, { vol: 0.06 }); }
+        else if (name === "ok") { playTone(659.25, t, 0.35, { vol: 0.08 }); playTone(880, t + 0.11, 0.45, { vol: 0.07 }); }
+        else if (name === "step") [523.25, 659.25, 783.99].forEach((f, i) => playTone(f, t + i * 0.08, 0.35, { vol: 0.06 }));
+        else if (name === "bad") { playTone(330, t, 0.22, { type: "triangle", vol: 0.06, to: 262 }); playTone(262, t + 0.16, 0.28, { type: "triangle", vol: 0.05 }); }
+        else if (name === "beep") { playTone(1000, t, 0.12, { vol: 0.06 }); playTone(1000, t + 0.18, 0.12, { vol: 0.06 }); }
+        else if (name === "done") {
+          [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => playTone(f, t + i * 0.12, 0.6, { vol: 0.07 }));
+          const st = opts.stars ?? 0;
+          for (let i = 0; i < st; i++) playTone(1318.5 + i * 220, t + 0.6 + i * 0.28, 0.4, { type: "triangle", vol: 0.05 });
+        } else if (name === "star") playTone(1568, t, 0.3, { type: "triangle", vol: 0.05 });
+        else if (name === "motor") {
+          const dur = opts.duration ?? 1.4, osc = ctx.createOscillator(), g = ctx.createGain(), lp = ctx.createBiquadFilter();
+          osc.type = "sawtooth"; osc.frequency.setValueAtTime(70, t); osc.frequency.linearRampToValueAtTime(82, t + dur);
+          lp.type = "lowpass"; lp.frequency.value = 420;
+          g.gain.setValueAtTime(1e-4, t); g.gain.exponentialRampToValueAtTime(0.05, t + 0.15); g.gain.setValueAtTime(0.05, t + dur - 0.2); g.gain.exponentialRampToValueAtTime(1e-4, t + dur);
+          osc.connect(lp).connect(g).connect(masterGain); osc.start(t); osc.stop(t + dur + 0.05);
+          playTone(600, t + dur - 0.05, 0.08, { type: "triangle", vol: 0.04 });
+        }
+      }
+
+      // Geometry & Logic
+      const SCENE = { w: 800, h: 480 }, FLOOR_Y = 470, PX_PER_CM = 5, HINGE = { x: 300, y: 360 }, TRAGUS_LOCAL = { L: 230, h: 45 }, EVD_LOCAL = { L: 276, h: 72 }, POLE_X = 652;
+      function bodyPt(lx, ly, hobDeg, liftCm = 0) {
+        const rad = hobDeg * Math.PI / 180, lyPx = liftCm * PX_PER_CM;
+        return { x: HINGE.x + lx * Math.cos(rad) - ly * Math.sin(rad), y: HINGE.y - lyPx - lx * Math.sin(rad) - ly * Math.cos(rad) };
+      }
+      const tragusPt = (hob, lift = 0) => bodyPt(TRAGUS_LOCAL.L, TRAGUS_LOCAL.h, hob, lift);
+      const evdPt = (hob, lift = 0) => bodyPt(EVD_LOCAL.L, EVD_LOCAL.h, hob, lift);
+      const yToCm = y => (FLOOR_Y - y) / PX_PER_CM;
+      const cmToY = cm => FLOOR_Y - cm * PX_PER_CM;
+      const refCm = (hob, lift = 0) => yToCm(tragusPt(hob, lift).y);
+      const drainAbsCm = s => s.zeroCm + s.drainOffsetCm;
+      const zeroErr = (s, hob, lift = 0) => s.zeroCm - refCm(hob, lift);
+      const drainErr = (s, hob, lift = 0) => drainAbsCm(s) - refCm(hob, lift);
+      const TOL = 0.05;
+      const snapStep = (v, base, step) => base + Math.round((v - base) / step) * step;
+      const snapBand = (v, target, range, on) => on && Math.abs(v - target) <= range ? target : v;
+      const levelStatus = (actual, ordered) => Math.abs(actual - ordered) < TOL ? "ok" : actual < ordered ? "over" : "under";
+      const RISK_TEXT = { ok: "ระดับระบายตรงตามคำสั่ง", over: "ระดับระบายต่ำกว่าที่สั่ง → เสี่ยงระบายมากเกิน", under: "ระดับระบายสูงกว่าที่สั่ง → อาจระบายน้อยกว่าที่ต้องการ" };
+      const PORT_LABEL = { patient: "ผู้ป่วย", drain: "กระเปาะระบาย", transducer: "Transducer", air: "อากาศ (ช่อง zero)" };
+      const STOPCOCK = {
+        OPEN_TO_DRAIN: { label: "เปิดระบาย", detail: "ผู้ป่วย ↔ กระเปาะระบาย และ transducer · CSF ไหลออกได้", links: [["patient", "drain"], ["patient", "transducer"]], closed: ["air"], csfCanDrain: true, icpReadable: false },
+        CLOSED_TO_DRAIN: { label: "ปิดทางไปกระเปาะระบาย", detail: "ปิดทางกระเปาะระบาย · ผู้ป่วยยังติดต่อกับ transducer · ไม่มี CSF ไหลออก", links: [["patient", "transducer"]], closed: ["drain", "air"], csfCanDrain: false, icpReadable: true },
+        OFF_TO_PATIENT: { label: "ปิดทางผู้ป่วย (สำหรับ zero)", detail: "ปิดทางผู้ป่วย · transducer เปิดสู่อากาศเพื่อ zero", links: [["transducer", "air"]], closed: ["patient", "drain"], csfCanDrain: false, icpReadable: false }
+      };
+      const openFromPatient = st => STOPCOCK[st].links.filter(l => l.includes("patient")).map(l => l[0] === "patient" ? l[1] : l[0]);
+      const checkRestore = (cur, ord) => {
+        const errs = [];
+        if (cur.hobDeg !== ord.hobDeg || (cur.liftCm ?? 0) !== (ord.liftCm ?? 0)) errs.push("ท่าผู้ป่วยยังไม่ตรงคำสั่ง");
+        if (Math.abs(zeroErr(cur.setup, cur.hobDeg, cur.liftCm ?? 0)) >= TOL) errs.push("จุดศูนย์ยังไม่ตรงจุดอ้างอิง");
+        if (Math.abs(cur.setup.drainOffsetCm - ord.drainLevelCm) >= TOL) errs.push("ระดับระบายยังไม่ตรงคำสั่ง");
+        if (cur.stopcock !== ord.drainMode) errs.push(`สถานะระบบยังไม่คืนเป็น “${STOPCOCK[ord.drainMode].label}” ตามคำสั่ง`);
+        return errs;
+      };
+      const calcInterval = (prev, curr, emptied) => emptied || curr.value < prev.value ? null : { value: curr.value - prev.value, unit: "mL" };
+      const calcStars = ({ mistakes, hintUsed }) => mistakes > 0 ? 1 : hintUsed ? 2 : 3;
+
+      const SNAP_NOTE = "snap เป็นตัวช่วยของเกม ไม่ใช่เกณฑ์ความคลาดเคลื่อนที่ยอมรับทางคลินิก";
+      const TAG_TEXT = {
+        "m1-wrong-point": "ระบุจุดอ้างอิง tragus/EAM บนภาพ",
+        "m2-zero": "จัดจุดศูนย์ให้ตรงเส้นอ้างอิง",
+        "m2-level": "ตั้งระดับระบายตามคำสั่ง (วัดจากจุดศูนย์)",
+        "m3-order": "ลำดับแรกก่อนเปลี่ยนท่า: ตรวจคำสั่งและสถานะระบบ",
+        "m3-open-move": "ปิดทางไปกระเปาะระบายก่อนเปลี่ยนท่า",
+        "m3-relevel": "จัดจุดศูนย์ใหม่หลังเปลี่ยนท่า",
+        "m3-restore": "คืนสถานะระบบให้ตรงคำสั่งก่อนจบ",
+        "m4-read": "อ่านกระบอกตวงที่ระดับสายตา",
+        "m4-interval": "แยกปริมาณสะสมกับปริมาณในช่วงเวลา",
+        "m4-record": "บันทึกให้ครบและหน่วยถูกต้อง",
+        "icp-level": "ตรวจจุดอ้างอิงและการจัดระดับก่อนวัด ICP",
+        "icp-zero-concept": "แยก leveling ออกจาก zeroing",
+        "icp-zero-do": "ขั้นตอน zero ตามคู่มืออุปกรณ์",
+        "icp-measure-state": "ตั้งทางเดินระบบสำหรับวัด ICP",
+        "icp-wait": "รอ waveform และค่าคงที่ก่อนอ่าน",
+        "icp-unit": "บันทึก ICP เป็น mmHg (ไม่ใช่ระดับระบาย)",
+        "icp-restore": "คืนสถานะการระบายตามคำสั่ง"
+      };
+      const PAL = { navy: "#12355b", navy2: "#1d4e7e", sky: "#2f8fd8", skyLight: "#d8ecfb", teal: "#0f9b8e", tealLight: "#d3f2ee", skin: "#f1c9a5", skinDark: "#d9a57d", hair: "#4a3b30", bed: "#c7d3e0", blanket: "#8fb4d9", csf: "#f4e7a1", red: "#c0392b", amber: "#d98c00", grey: "#6b7c8f" };
+
+      function useTrial() {
+        const [mistakes, setMistakes] = useState(0);
+        const [hintUsed, setHintUsed] = useState(false);
+        const [tags, setTags] = useState([]);
+        const ref = useRef({ mistakes: 0, hintUsed: false, tags: [] });
+        const miss = useCallback(tag => {
+          ref.current.mistakes += 1; setMistakes(ref.current.mistakes); sfx("bad");
+          if (!ref.current.tags.includes(tag)) { ref.current.tags = [...ref.current.tags, tag]; setTags(ref.current.tags); }
+        }, []);
+        const hint = useCallback(() => { ref.current.hintUsed = true; setHintUsed(true); }, []);
+        const snapshot = useCallback(() => ({ stars: calcStars(ref.current), tags: ref.current.tags, mistakes: ref.current.mistakes, hintUsed: ref.current.hintUsed }), []);
+        return { mistakes, hintUsed, tags, miss, hint, snapshot };
+      }
+
+      function Stars({ n, max = 3, size = 22 }) {
+        return h("span", { className: "stars", "aria-label": `${n} จาก ${max} ดาว` },
+          Array.from({ length: max }, (_, i) => h("svg", { key: i, width: size, height: size, viewBox: "0 0 24 24", "aria-hidden": true },
+            h("path", { d: "M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z", fill: i < n ? "#f2b705" : "#d5dee8" })
+          ))
+        );
+      }
+
+      function OrderCard({ compact = false, extra }) {
+        const o = useCase().order;
+        return h("div", { className: `order-card ${compact ? "compact" : ""}` },
+          h("div", { className: "order-head" }, h("strong", null, o.label), h("span", { className: "badge-sim" }, o.disclaimer)),
+          h("ul", null,
+            h("li", null, h("b", null, "จุดอ้างอิง:"), " ", o.reference),
+            h("li", null, h("b", null, "ท่า:"), " ", o.position),
+            h("li", null, h("b", null, "การระบาย:"), " ", o.drainModeText, " · ", o.drainLevelText),
+            !compact && h("li", null, h("b", null, "เปลี่ยนท่า:"), " ", o.positionChangeRule)
+          ),
+          !compact && h("details", null,
+            h("summary", null, "เกณฑ์รายงานของกรณีนี้"),
+            h("ul", null, o.reportCriteria.map(c => h("li", { key: c }, c))),
+            h("small", null, o.reportCriteriaNote)
+          ),
+          extra
+        );
+      }
+
+      const PORTS = { patient: [48, 64, 84], drain: [178, 20, 104], transducer: [178, 110, 96], air: [266, 110, 60] }, HUB = [112, 64];
+      function StopcockDiagram({ state, showAir = false }) {
+        const info = STOPCOCK[state];
+        const list = showAir ? ["patient", "drain", "transducer", "air"] : ["patient", "drain", "transducer"];
+        const openPt = openFromPatient(state);
+        const flowing = info.links.some(([a, b]) => [a, b].includes("patient") && [a, b].includes("drain"));
+        return h("figure", { className: "stopcock", "data-state": state },
+          h("svg", { viewBox: "0 0 300 140", role: "img", "aria-label": `สถานะ: ${info.label}` },
+            list.map(p => {
+              const [cx, cy, w] = PORTS[p], isOpen = info.links.some(l => l.includes(p)), [x0, y0] = p === "air" ? [PORTS.transducer[0] + 48, PORTS.transducer[1]] : HUB;
+              return h("g", { key: p, "data-port": p, "data-open": isOpen },
+                h("line", { x1: x0, y1: y0, x2: cx, y2: cy, stroke: isOpen ? "#0f9b8e" : "#c4ced9", strokeWidth: isOpen ? 6 : 4, strokeDasharray: isOpen ? undefined : "5 4", strokeLinecap: "round" }),
+                h("rect", { x: cx - w / 2, y: cy - 12, width: w, height: 24, rx: 12, fill: isOpen ? "#d3f2ee" : "#eef1f5", stroke: isOpen ? "#0f9b8e" : "#aab7c6" }),
+                h("text", { x: cx, y: cy + 4, textAnchor: "middle", fontSize: 11.5, fontWeight: 700, fill: "#12355b" }, p === "air" ? "อากาศ" : PORT_LABEL[p]),
+                h("text", { x: cx, y: cy + 25, textAnchor: "middle", fontSize: 10, fontWeight: 700, fill: isOpen ? "#0f7a70" : "#8a4a00" }, isOpen ? "เปิด" : "ปิด")
+              );
+            }),
+            h("circle", { cx: HUB[0], cy: HUB[1], r: 9, fill: "#fff", stroke: "#12355b", strokeWidth: 2.5 }),
+            flowing && h("circle", { r: 4, fill: "#e8c93a", stroke: "#b39a1c" }, h("animateMotion", { dur: "1.6s", repeatCount: "indefinite", path: "M48,64 L112,64 L178,20" }))
+          ),
+          h("figcaption", null, h("b", null, info.label), h("br"), h("span", null, "ติดต่อกับผู้ป่วย: ", openPt.length ? openPt.map(p => PORT_LABEL[p]).join(", ") : "ไม่มี (ปิดทางผู้ป่วย)"))
+        );
+      }
+
+      function ModeChips({ value, onPick, options }) {
+        return h("div", { className: "choice-row", role: "radiogroup", "aria-label": "เลือกสถานะระบบ" },
+          options.map(o => h("button", { key: o, role: "radio", "aria-checked": value === o, className: `chip ${value === o ? "on" : ""}`, onClick: () => onPick(o) }, STOPCOCK[o].label))
+        );
+      }
+
+      function Feedback({ fb }) {
+        if (!fb) return null;
+        return h("div", { className: `fb fb-${fb.kind}`, role: "status", "aria-live": "polite" },
+          h("b", null, (fb.kind === "ok" ? "✓ " : fb.kind === "bad" ? "! " : ""), fb.text),
+          fb.sub && h("div", { className: "fb-sub" }, fb.sub)
+        );
+      }
+
+      function useHold(fn) {
+        const ref = useRef(fn); ref.current = fn;
+        const tm = useRef({});
+        const clear = () => { clearTimeout(tm.current.a); clearInterval(tm.current.b); tm.current = {}; };
+        useEffect(() => clear, []);
+        return {
+          onPointerDown: e => {
+            if (e.button !== 0) return;
+            e.preventDefault();
+            e.currentTarget.setPointerCapture?.(e.pointerId);
+            ref.current(); clear();
+            tm.current.a = window.setTimeout(() => { tm.current.b = window.setInterval(() => ref.current(), 85); }, 380);
+          },
+          onPointerUp: clear, onPointerCancel: clear, onLostPointerCapture: clear,
+          onClick: e => { if (e.detail === 0) ref.current(); },
+          onContextMenu: e => e.preventDefault()
+        };
+      }
+
+      function Nudge({ label, onUp, onDown, value }) {
+        const downH = useHold(onDown), upH = useHold(onUp);
+        return h("div", { className: "nudge" },
+          h("button", { className: "nbtn", ...downH, "aria-label": `${label} ลง` }, "▼"),
+          h("div", { className: "nval", "aria-live": "polite" }, h("small", null, label), h("b", null, value)),
+          h("button", { className: "nbtn", ...upH, "aria-label": `${label} ขึ้น` }, "▲")
+        );
+      }
+
+      function ZoomBar({ view, setView, options }) {
+        return h("div", { className: "zoombar", role: "toolbar", "aria-label": "ซูมเฉพาะจุด" },
+          options.map(o => h("button", { key: o.id, className: `zbtn ${view === o.id ? "on" : ""}`, onClick: () => setView(o.id) }, o.label))
+        );
+      }
+
+      function MissionShell(props) {
+        const [showHint, setShowHint] = useState(false);
+        const [showOrder, setShowOrder] = useState(false);
+        const curCase = useCase();
+        return h("div", { className: "mission" },
+          h("section", { className: "stage" }, h("div", { className: "scene-wrap" }, props.scene), props.zoom),
+          h("aside", { className: "panel" },
+            h("div", { className: "mtitle" }, props.title, props.stepLabel && h("span", { className: "step" }, props.stepLabel)),
+            h("div", null, h("span", { className: "case-tag", title: curCase.caseInfo.situation }, curCase.label, " · ", curCase.caseInfo.patient.replace("ผู้ป่วยจำลอง ", ""))),
+            h("p", { className: "goal" }, "เป้าหมาย: ", props.goal),
+            h("div", { className: "instr" }, props.instruction),
+            h("div", { className: "controls" }, props.children),
+            h(Feedback, { fb: props.feedback }),
+            showHint && h("div", { className: "hint-box" }, "คำใบ้: ", props.hint),
+            h("div", { className: "row tools" },
+              h("button", { className: "btn ghost", onClick: () => { setShowHint(true); props.onHint(); } }, "คำใบ้"),
+              h("button", { className: "btn ghost", onClick: props.onRetry }, "ลองใหม่"),
+              props.showOrder !== false && h("button", { className: "btn ghost", onClick: () => setShowOrder(v => !v), "aria-expanded": showOrder }, "การ์ดคำสั่ง")
+            ),
+            showOrder && h(OrderCard, { extra: props.orderExtra })
+          )
+        );
+      }
+
+      function CompleteModal({ stars, title, message, onNext, nextLabel, onRetry, onHome }) {
+        return h("div", { className: "complete", role: "dialog", "aria-label": "ภารกิจสำเร็จ" },
+          h("div", { className: "complete-card" },
+            h("div", { className: "burst", "aria-hidden": true }),
+            h("h2", null, title),
+            h(Stars, { n: stars, size: 38 }),
+            h("p", null, message),
+            h("small", { className: "muted" }, "ดาวเป็นผลการฝึกในเกม ไม่ใช่การรับรองสมรรถนะปฏิบัติจริง"),
+            h("div", { className: "row center" },
+              onNext && h("button", { className: "btn primary", onClick: onNext }, nextLabel ?? "ภารกิจถัดไป"),
+              h("button", { className: "btn", onClick: onRetry }, "เล่นภารกิจนี้อีกครั้ง"),
+              h("button", { className: "btn ghost", onClick: onHome }, "หน้าหลัก")
+            )
+          )
+        );
+      }
+
+      function MissionRunner({ id, title, learning, sound, onRecord, onNext, nextLabel, onReplay, onHome, children }) {
+        const tr = useTrial();
+        const [attempt, setAttempt] = useState(0);
+        const [done, setDone] = useState(null);
+        const startRef = useRef(Date.now());
+        const finish = msg => {
+          if (done) return;
+          const snap = tr.snapshot();
+          sfx("done", { stars: snap.stars });
+          onRecord(id, snap.stars, snap.tags, { mistakes: snap.mistakes, hintUsed: snap.hintUsed, durationSec: Math.round((Date.now() - startRef.current) / 1000) });
+          setDone({ msg, stars: snap.stars });
+        };
+        return h(Fragment, null,
+          h(Fragment, { key: attempt }, children({ tr, retry: () => setAttempt(a => a + 1), finish, learning, sound, ok: () => sfx("ok") })),
+          done && h(CompleteModal, { stars: done.stars, title: `${title} สำเร็จ`, message: done.msg, onNext, nextLabel, onRetry: onReplay, onHome })
+        );
+      }
+
+      function RiskChart({ risk, ordered = 15, actual }) {
+        if (risk === "ok") return null;
+        const yOrd = 30, yAct = risk === "over" ? 52 : 10;
+        return h("div", { className: "risk" },
+          h("svg", { viewBox: "0 0 220 64", "aria-hidden": true },
+            h("line", { x1: 10, x2: 120, y1: yOrd, y2: yOrd, stroke: "#12355b", strokeDasharray: "5 4", strokeWidth: 2 }),
+            h("text", { x: 124, y: yOrd + 4, fontSize: 10, fill: "#12355b" }, "ที่สั่ง +", ordered),
+            h("line", { x1: 10, x2: 120, y1: yAct, y2: yAct, stroke: "#c0392b", strokeWidth: 3 }),
+            h("text", { x: 124, y: yAct + 4, fontSize: 10, fill: "#c0392b" }, "จริง ", actual > 0 ? "+" : "", Number.isInteger(actual) ? actual : actual.toFixed(1)),
+            h("line", { x1: 60, x2: 60, y1: yOrd, y2: yAct + (risk === "over" ? -4 : 4), stroke: "#c0392b", strokeWidth: 2, markerEnd: "url(#rk)" }),
+            h("defs", null, h("marker", { id: "rk", viewBox: "0 0 10 10", refX: 5, refY: 5, markerWidth: 5, markerHeight: 5, orient: "auto" }, h("path", { d: "M0,0L10,5L0,10z", fill: "#c0392b" })))
+          ),
+          h("span", null, RISK_TEXT[risk]),
+          h("small", { className: "muted" }, "ภาพแสดงทิศทางความเสี่ยงอย่างง่าย ไม่ได้คำนวณอัตราการไหลจริง (ยังมีปัจจัยอื่นเกี่ยวข้อง)")
+        );
+      }
+
+      function useSmoothAngle(init) {
+        const [angle, setAngle] = useState(init);
+        const raf = useRef(0);
+        useEffect(() => () => cancelAnimationFrame(raf.current), []);
+        return {
+          angle,
+          setAngle,
+          animateTo: (target, dur = 1400) => new Promise(res => {
+            const from = angle, t0 = performance.now();
+            const step = now => {
+              const p = Math.min(1, (now - t0) / dur);
+              const ease = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+              setAngle(p < 1 ? from + (target - from) * ease : target);
+              if (p < 1) raf.current = requestAnimationFrame(step); else res();
+            };
+            raf.current = requestAnimationFrame(step);
+          })
+        };
+      }
+
+      function useSmoothBox(box) {
+        const [cur, setCur] = useState(box);
+        const prev = useRef(box);
+        useEffect(() => {
+          const from = prev.current, t0 = performance.now();
+          let id = 0;
+          const step = now => {
+            const p = Math.min(1, (now - t0) / 450), e = 1 - Math.pow(1 - p, 3);
+            const next = from.map((v, i) => v + (box[i] - v) * e);
+            prev.current = next; setCur(next);
+            if (p < 1) id = requestAnimationFrame(step);
+          };
+          id = requestAnimationFrame(step);
+          return () => cancelAnimationFrame(id);
+        }, [box.join(",")]);
+        return cur;
+      }
+
+      function useIsNarrow(ref) {
+        const [narrow, setNarrow] = useState(() => typeof window !== "undefined" && window.innerWidth < 620);
+        useEffect(() => {
+          const el = ref.current; if (!el) return;
+          const check = () => setNarrow(el.getBoundingClientRect().width < 620);
+          check();
+          const ro = new ResizeObserver(check); ro.observe(el);
+          return () => ro.disconnect();
+        }, [ref]);
+        return narrow;
+      }
+
+      function EvdScene(props) {
+        const svgRef = useRef(null);
+        const setup = props.setup, liftCm = props.liftCm ?? 0, liftPx = liftCm * PX_PER_CM;
+        const tr = tragusPt(props.hobDeg, liftCm), evd = evdPt(props.hobDeg, liftCm);
+        const yZero = setup ? cmToY(setup.zeroCm) : tr.y;
+        const yDrain = setup ? cmToY(drainAbsCm(setup)) : yZero - 75;
+        const yScaleTop = yZero - 27 * PX_PER_CM, yScaleBot = yZero + 10 * PX_PER_CM;
+        const sc = STOPCOCK[props.stopcock ?? "OPEN_TO_DRAIN"], ev = props.event ?? {};
+        const cylY = yScaleBot + 10, cylH = 62, cylMax = 30, cylVal = Math.max(0, Math.min(cylMax, props.cylinderMl ?? 12));
+        const views = { all: [0, 0, SCENE.w, SCENE.h], head: [tr.x - 125, tr.y - 95, 265, 185], scale: [530, yScaleTop - 12, 270, yScaleBot - yScaleTop + 30], cylinder: [600, cylY - 14, 140, cylH + 30] };
+        if (useIsNarrow(svgRef)) views.all = [300, 40, 500, 420];
+        const vb = useSmoothBox(views[props.view ?? "all"]);
+        const dragKind = useRef(null), dragOffset = useRef(0);
+        const svgY = e => {
+          const el = svgRef.current, pt = el.createSVGPoint();
+          pt.x = e.clientX; pt.y = e.clientY;
+          return pt.matrixTransform(el.getScreenCTM().inverse()).y;
+        };
+        const onDown = kind => e => {
+          if (props.dragTarget !== kind || !setup) return;
+          e.target.setPointerCapture?.(e.pointerId);
+          dragKind.current = kind;
+          dragOffset.current = svgY(e) - (kind === "zero" ? yZero : yDrain);
+          e.preventDefault();
+        };
+        const onMove = e => {
+          if (!dragKind.current || !setup) return;
+          const y = svgY(e) - dragOffset.current;
+          if (dragKind.current === "zero") props.onDragZero?.(yToCm(y));
+          else props.onDragDrain?.(yToCm(y) - setup.zeroCm);
+        };
+        const onUp = () => { dragKind.current = null; };
+        const panelX = 606;
+        const tubePath = `M ${evd.x} ${evd.y} C ${evd.x + 30} ${evd.y - 70}, ${panelX - 30} ${Math.min(evd.y, yZero) - 90}, ${panelX} ${yZero}`;
+        const kinkPos = { x: (evd.x + panelX) / 2 + 8, y: Math.min(evd.y, yZero) - 46 };
+        const hl = k => props.highlight === k ? "hl" : undefined;
+        const tap = k => props.onTap ? () => props.onTap(k) : undefined;
+        const dripping = sc.csfCanDrain && !ev.noFlow;
+
+        return h("svg", { ref: svgRef, className: "scene", viewBox: vb.join(" "), preserveAspectRatio: "xMidYMid meet", role: "img", "aria-label": props.label ?? "ภาพผู้ป่วยบนเตียงพร้อมชุดระบาย EVD มุมด้านข้าง", onPointerMove: onMove, onPointerUp: onUp, onPointerCancel: onUp, onPointerLeave: onUp },
+          h("defs", null,
+            h("linearGradient", { id: "wall", x1: "0", x2: "0", y1: "0", y2: "1" }, h("stop", { offset: "0", stopColor: "#f6fafd" }), h("stop", { offset: "1", stopColor: "#e7eff7" })),
+            h("marker", { id: "arrowHead", viewBox: "0 0 10 10", refX: 5, refY: 5, markerWidth: 6, markerHeight: 6, orient: "auto-start-reverse" }, h("path", { d: "M0,0 L10,5 L0,10 z", fill: PAL.sky })),
+            h("clipPath", { id: "cylClip" }, h("rect", { x: 652, y: cylY, width: 32, height: cylH, rx: 3 }))
+          ),
+          h("rect", { x: -400, y: -400, width: SCENE.w + 800, height: SCENE.h + 800, fill: "url(#wall)" }),
+          h("rect", { x: -400, y: FLOOR_Y, width: SCENE.w + 800, height: 400, fill: "#dbe5ef" }),
+          [60, 560].map(x => h("g", { key: x }, h("rect", { x, y: 404 - liftPx, width: 8, height: 52 + liftPx, fill: PAL.grey }), h("circle", { cx: x + 4, cy: 460, r: 9, fill: PAL.navy }))),
+          liftPx > 0.5 && h("text", { x: 330, y: 448, textAnchor: "middle", fontSize: 12, fontWeight: 700, fill: PAL.navy2 }, "เตียงยกสูง +", Math.round(liftPx), " cm"),
+          h("g", { transform: `translate(0 ${-liftPx})` },
+            h("g", null,
+              h("rect", { x: 30, y: 392, width: 590, height: 12, rx: 4, fill: PAL.navy2 }),
+              h("rect", { x: 40, y: 360, width: 262, height: 20, rx: 6, fill: PAL.bed }),
+              h("rect", { x: 40, y: 380, width: 262, height: 12, fill: PAL.grey, opacity: 0.35 })
+            ),
+            h("rect", { x: 60, y: 330, width: 245, height: 30, rx: 14, fill: PAL.blanket }),
+            h("circle", { cx: HINGE.x, cy: HINGE.y + 10, r: 7, fill: PAL.navy2 }),
+            h("g", { transform: `rotate(${-props.hobDeg} ${HINGE.x} ${HINGE.y})`, "data-testid": "body" },
+              h("rect", { x: 296, y: 360, width: 300, height: 20, rx: 6, fill: PAL.bed }),
+              h("ellipse", { cx: 540, cy: 362, rx: 56, ry: 9, fill: "#ffffff", stroke: "#cdd8e4" }),
+              h("rect", { x: 296, y: 318, width: 180, height: 42, rx: 18, fill: PAL.blanket, onClick: tap("chest"), className: props.onTap ? "tappable" : undefined }),
+              h("rect", { x: 420, y: 318, width: 60, height: 42, rx: 14, fill: "#a9c6e3", onClick: tap("shoulder"), className: props.onTap ? "tappable" : undefined }),
+              h("rect", { x: 470, y: 326, width: 40, height: 29, rx: 6, fill: PAL.skin }),
+              h("path", { d: "M 482 327 C 492 324 498 320 500 312 L 500 302 C 503 297 507 295 510 293 C 512 291 513 289 515 287 L 519 270 C 521 268 523 269 524 272 L 531 281 C 536 279 542 277 548 278 C 560 277 570 279 580 290 C 590 302 592 322 584 340 C 576 354 562 358 545 358 L 505 356 L 482 355 Z", fill: PAL.skin, stroke: PAL.skinDark, strokeWidth: 1.5, strokeLinejoin: "round" }),
+              h("path", { d: "M 574 284 C 592 298 594 334 576 352 C 568 357 556 358 548 357", fill: "none", stroke: PAL.hair, strokeWidth: 8, strokeLinecap: "round", opacity: 0.85 }),
+              h("path", { d: "M 535 286 q 6 3 12 0", fill: "none", stroke: PAL.navy, strokeWidth: 2, strokeLinecap: "round" }),
+              h("path", { d: "M 537 280 q 7 -2 14 0", fill: "none", stroke: "#8a6a52", strokeWidth: 1.6, strokeLinecap: "round" }),
+              h("path", { d: "M 504 296 l 6 -2", stroke: "#b5654f", strokeWidth: 2, strokeLinecap: "round" }),
+              ev.drowsy && h("text", { x: 540, y: 262, fontSize: 16, fill: PAL.navy2, className: "zzz" }, "z z"),
+              h("rect", { x: 549, y: 276, width: 16, height: 14, fill: "transparent", onClick: tap("forehead"), className: props.onTap ? "tappable" : undefined }),
+              h("rect", { x: 532, y: 279, width: 17, height: 12, fill: "transparent", onClick: tap("eye"), className: props.onTap ? "tappable" : undefined }),
+              h("path", { d: "M 524 318 C 518 328 524 342 538 342 C 552 342 556 326 548 316 C 543 311 536 312 534 316", fill: PAL.skinDark, stroke: "#b07d58", strokeWidth: 1.6, opacity: 0.9 }),
+              h("path", { d: "M 529 324 C 528 333 536 337 542 334 C 547 330 546 322 541 320", fill: "none", stroke: "#a0704d", strokeWidth: 1.4 }),
+              h("circle", { cx: 531, cy: 319.5, r: 2.6, fill: "#5b3c28" }),
+              h("path", { d: "M 526.5 315.5 q 4 -3.5 8 0", fill: PAL.skin, stroke: "#9c6b48", strokeWidth: 2, strokeLinecap: "round" }),
+              h("rect", { x: 565, y: 281, width: 22, height: 14, rx: 4, fill: "#fff", stroke: "#b8c6d6", transform: "rotate(40 576 288)" }),
+              props.onTap && h("circle", { cx: 576, cy: 288, r: 10, fill: "transparent", onClick: tap("evd"), className: "tappable" }),
+              props.onTap && h("circle", { cx: 530, cy: 315, r: 12, fill: "transparent", onClick: tap("tragus"), className: "tappable", "data-testid": "tap-tragus" })
+            )
+          ),
+          props.highlight === "tragus" && h("circle", { cx: tr.x, cy: tr.y, r: 16, className: "pulse" }),
+          props.highlight === "evd" && h("circle", { cx: evd.x, cy: evd.y, r: 14, className: "pulse" }),
+          props.tapMarks?.map((m, i) => {
+            const pt = m.id === "tragus" ? tr : m.id === "evd" ? evd : null;
+            return pt ? h("g", { key: i, pointerEvents: "none" }, h("circle", { cx: pt.x, cy: pt.y, r: 9, fill: "none", stroke: m.ok ? PAL.teal : PAL.red, strokeWidth: 3 })) : null;
+          }),
+          props.showRefLine && h("g", { key: `ref-${Math.round(tr.y)}`, pointerEvents: "none" },
+            h("circle", { cx: tr.x, cy: tr.y, r: 2.5, fill: PAL.navy }),
+            h("line", { x1: tr.x, y1: tr.y, x2: 600, y2: tr.y, stroke: PAL.teal, strokeWidth: 2.4, strokeDasharray: "8 5", className: "draw-line" }),
+            h("rect", { x: tr.x - 92, y: tr.y - 8.5, width: 74, height: 17, rx: 8.5, fill: PAL.tealLight, stroke: PAL.teal, strokeWidth: 0.8 }),
+            h("text", { x: tr.x - 55, y: tr.y + 3.5, textAnchor: "middle", fontSize: 10.5, fill: PAL.navy, fontWeight: 700 }, "เส้นอ้างอิง →")
+          ),
+          h("rect", { x: POLE_X - 3, y: 14, width: 6, height: FLOOR_Y - 14, fill: "#9fb0c2" }),
+          h("rect", { x: POLE_X - 34, y: FLOOR_Y - 6, width: 68, height: 8, rx: 3, fill: PAL.grey }),
+          setup && h("g", null,
+            props.showZeroGuide && h("line", { x1: tr.x - 30, y1: yZero, x2: 600, y2: yZero, stroke: PAL.teal, strokeWidth: 1, opacity: 0.45, strokeDasharray: "2 4" }),
+            h("g", { className: props.dragTarget === "zero" ? "draggable" : undefined, onPointerDown: onDown("zero"), "data-testid": "panel" },
+              h("rect", { x: 596, y: yScaleTop, width: 112, height: yScaleBot - yScaleTop, rx: 8, fill: "#ffffff", stroke: props.dragTarget === "zero" ? PAL.teal : "#b6c6d8", strokeWidth: props.dragTarget === "zero" ? 3 : 1.5 }),
+              Array.from({ length: 38 }, (_, i) => i - 10).map(cm => {
+                const y = yZero - cm * PX_PER_CM, maj = cm % 5 === 0;
+                return h("g", { key: cm },
+                  h("line", { x1: 600, x2: maj ? 616 : 609, y1: y, y2: y, stroke: PAL.navy, strokeWidth: maj ? 1.4 : 0.7 }),
+                  maj && cm !== 0 && h("text", { x: 619, y: y + 3.5, fontSize: 9.5, fill: PAL.navy, fontWeight: 600 }, cm > 0 ? `+${cm}` : cm)
+                );
+              }),
+              h("text", { x: 684, y: yScaleTop + 13, textAnchor: "middle", fontSize: 10, fontWeight: 600, fill: PAL.grey }, "cmH₂O")
+            ),
+            h("g", { className: hl("zero") },
+              h("rect", { x: 596, y: yZero - 1.8, width: 112, height: 3.6, fill: PAL.teal }),
+              h("circle", { cx: 600, cy: yZero, r: 6, fill: PAL.teal, stroke: "#fff", strokeWidth: 1.5 }),
+              h("text", { x: 619, y: yZero + 4, fontSize: 11, fontWeight: 700, fill: PAL.teal }, "0"),
+              h("text", { x: 712, y: yZero + 4, fontSize: 11, fontWeight: 700, fill: PAL.teal }, "จุดศูนย์"),
+              props.highlight === "zero" && h("circle", { cx: 600, cy: yZero, r: 14, className: "pulse" })
+            ),
+            props.showTransducer && h("g", null,
+              h("rect", { x: 560, y: yZero + 6, width: 30, height: 14, rx: 3, fill: PAL.navy2 }),
+              h("text", { x: 575, y: yZero + 32, textAnchor: "middle", fontSize: 8.5, fill: PAL.navy2, fontWeight: 600 }, "Transducer")
+            ),
+            props.showDistance && setup.drainOffsetCm !== 0 && h("g", null,
+              h("line", { x1: 702, y1: yZero - 3, x2: 702, y2: yDrain + 3, stroke: PAL.sky, strokeWidth: 2.4, markerStart: "url(#arrowHead)", markerEnd: "url(#arrowHead)" }),
+              h("rect", { x: 708, y: (yZero + yDrain) / 2 - 10, width: 84, height: 20, rx: 10, fill: PAL.sky }),
+              h("text", { x: 750, y: (yZero + yDrain) / 2 + 4, textAnchor: "middle", fontSize: 11, fill: "#fff", fontWeight: 700 }, setup.drainOffsetCm > 0 ? "+" : "", Number.isInteger(setup.drainOffsetCm) ? setup.drainOffsetCm : setup.drainOffsetCm.toFixed(1), " cmH₂O")
+            ),
+            props.showDrainMarker !== false && h("g", { className: `${props.dragTarget === "drain" ? "draggable" : ""} ${hl("drain") ?? ""}`, onPointerDown: onDown("drain"), "data-testid": "drain" },
+              h("polygon", { points: `640,${yDrain} 648,${yDrain - 6} 648,${yDrain + 6}`, fill: PAL.sky }),
+              h("line", { x1: 600, x2: 700, y1: yDrain, y2: yDrain, stroke: PAL.sky, strokeWidth: 2.6 }),
+              h("rect", { x: 656, y: yDrain - 4, width: 26, height: 34, rx: 6, fill: PAL.skyLight, stroke: props.dragTarget === "drain" ? PAL.sky : "#8fb9de", strokeWidth: props.dragTarget === "drain" ? 3 : 1.5 }),
+              dripping && h("circle", { cx: 669, cy: yDrain + 6, r: 2.4, fill: PAL.csf, stroke: "#c9b45a", className: ev.highFlow ? "drip fast" : "drip" }),
+              h("text", { x: 712, y: yDrain + 4, fontSize: 11, fontWeight: 700, fill: PAL.sky }, "ระดับระบาย"),
+              props.highlight === "drain" && h("circle", { cx: 669, cy: yDrain + 10, r: 22, className: "pulse" }),
+              h("line", { x1: 669, x2: 669, y1: yDrain + 30, y2: cylY, stroke: "#9ec3e4", strokeWidth: 2.5 })
+            ),
+            h("line", { x1: panelX, y1: yZero, x2: panelX + 6, y2: yZero, stroke: PAL.navy, strokeWidth: 3 }),
+            h("path", { d: `M ${panelX + 6} ${yZero} L 640 ${yZero} L 640 ${yDrain + 6} L 656 ${yDrain + 6}`, fill: "none", stroke: sc.csfCanDrain ? "#7fb6e3" : "#c4ced9", strokeWidth: 2.5, strokeDasharray: sc.csfCanDrain ? undefined : "4 3" }),
+            h("circle", { cx: panelX, cy: yZero, r: 6, fill: "#fff", stroke: PAL.navy, strokeWidth: 2 }),
+            !sc.csfCanDrain && h("g", null, h("rect", { x: 620, y: yZero - 22, width: 36, height: 16, rx: 8, fill: PAL.amber }), h("text", { x: 638, y: yZero - 10.5, textAnchor: "middle", fontSize: 10, fontWeight: 700, fill: "#fff" }, "ปิด")),
+            h("g", { className: hl("cylinder") },
+              h("rect", { x: 652, y: cylY, width: 32, height: cylH, rx: 3, fill: "#fff", stroke: PAL.navy2, strokeWidth: 1.4 }),
+              h("rect", { clipPath: "url(#cylClip)", x: 652, y: cylY + cylH - cylVal / cylMax * cylH, width: 32, height: cylVal / cylMax * cylH, fill: ev.cloudy ? "#e2dcc4" : PAL.csf, opacity: 0.9 }),
+              [0, 10, 20, 30].map(v => h("g", { key: v },
+                h("line", { x1: 652, x2: 660, y1: cylY + cylH - v / cylMax * cylH, y2: cylY + cylH - v / cylMax * cylH, stroke: PAL.navy, strokeWidth: 0.8 }),
+                h("text", { x: 688, y: cylY + cylH - v / cylMax * cylH + 3, fontSize: 7.5, fill: PAL.navy }, v)
+              )),
+              h("text", { x: 668, y: cylY + cylH + 11, textAnchor: "middle", fontSize: 8.5, fill: PAL.navy, fontWeight: 600 }, "CSF (mL)"),
+              props.highlight === "cylinder" && h("rect", { x: 644, y: cylY - 8, width: 60, height: cylH + 24, rx: 8, className: "pulse" })
+            )
+          ),
+          h("path", { d: tubePath, fill: "none", stroke: "#ffffff", strokeWidth: 6, strokeLinecap: "round" }),
+          h("path", { d: tubePath, fill: "none", stroke: ev.cloudy ? "#cfc6a6" : "#e8d77a", strokeWidth: 3, strokeLinecap: "round" }),
+          ev.kink && h("g", null,
+            h("path", { d: `M ${kinkPos.x - 10} ${kinkPos.y + 6} l 6 -12 l 6 12 l 6 -12`, fill: "none", stroke: PAL.red, strokeWidth: 3 }),
+            h("text", { x: kinkPos.x - 4, y: kinkPos.y - 12, fontSize: 11, fill: PAL.red, fontWeight: 700 }, "สายพับ")
+          ),
+          ev.leak && h("g", null,
+            h("circle", { cx: panelX - 4, cy: yZero + 10, r: 3, fill: PAL.csf, stroke: "#c9b45a", className: "drip slow" }),
+            h("text", { x: panelX - 60, y: yZero + 30, fontSize: 11, fill: PAL.red, fontWeight: 700 }, "ข้อต่อรั่ว/หลวม")
+          ),
+          props.highlight === "evd" && h("text", { x: evd.x + 10, y: evd.y - 18, fontSize: 11, fill: PAL.navy, fontWeight: 700 }, "จุดออกของสาย EVD (ไม่ใช่หู)"),
+          props.icp?.show && h("g", null,
+            h("rect", { x: 18, y: 16, width: 230, height: 108, rx: 10, fill: "#0d2238" }),
+            h("text", { x: 30, y: 36, fontSize: 12, fill: "#9fd8ff", fontWeight: 700 }, "ICP"),
+            h("text", { x: 236, y: 36, fontSize: 10, fill: "#9fd8ff", textAnchor: "end" }, props.icp.zeroed ? "zero แล้ว" : "ยังไม่ได้ zero"),
+            h("text", { x: 236, y: 84, fontSize: 34, fill: "#7ef0c8", textAnchor: "end", fontWeight: 700, "data-testid": "icp-value" }, props.icp.value),
+            h("text", { x: 236, y: 104, fontSize: 11, fill: "#7ef0c8", textAnchor: "end" }, "mmHg"),
+            h("svg", { x: 28, y: 46, width: 120, height: 66, viewBox: "0 0 120 66" },
+              h("line", { x1: 0, x2: 120, y1: 52, y2: 52, stroke: "#284866" }),
+              props.icp.wave === "live" && h("path", { className: "wave", d: Array.from({ length: 8 }, (_, i) => { const x = i * 30 - 30; return `${i === 0 ? "M" : "L"} ${x} 40 L ${x + 6} 22 L ${x + 11} 30 L ${x + 15} 26 L ${x + 21} 38 L ${x + 30} 40`; }).join(" "), fill: "none", stroke: "#7ef0c8", strokeWidth: 2 }),
+              props.icp.wave === "flat" && h("line", { x1: 0, x2: 120, y1: 40, y2: 40, stroke: "#7ef0c8", strokeWidth: 2 })
+            )
+          )
+        );
+      }
+
+      // Missions
+      const WRONG_POINT = { evd: "นี่คือจุดที่สาย EVD ออกจากศีรษะ ไม่ใช่จุดอ้างอิง", forehead: "หน้าผากไม่ใช่จุดอ้างอิงตามคำสั่งนี้", eye: "ตาไม่ใช่จุดอ้างอิงตามคำสั่งนี้", shoulder: "ไหล่ไม่ใช่จุดอ้างอิงของ EVD", chest: "ระดับหัวใจใช้กับระบบอื่น ไม่ใช่จุดอ้างอิงของ EVD ในกรณีนี้" };
+      function Mission1({ tr, retry, finish, ok }) {
+        const c = useCase(), hob = c.order.hobDeg;
+        const [found, setFound] = useState(false), [marks, setMarks] = useState([]), [fb, setFb] = useState(null), [view, setView] = useState("head");
+        const setup = { zeroCm: refCm(hob) - 6, drainOffsetCm: c.order.drainLevelCm };
+        const onTap = id => {
+          if (found) return;
+          if (id === "tragus") {
+            setFound(true); ok();
+            setMarks(m => [...m, { id, ok: true }]);
+            setFb({ kind: "ok", text: "พบจุดอ้างอิงแล้ว", sub: c.mission1.explain });
+            setTimeout(() => setView("all"), 900);
+          } else {
+            tr.miss("m1-wrong-point");
+            setMarks(m => [...m.filter(x => x.id !== id), { id, ok: false }]);
+            setFb({ kind: "bad", text: WRONG_POINT[id], sub: "ใบหูเป็นเพียงจุดอ้างอิงภายนอก ไม่มีสายต่อเข้าหู" });
+          }
+        };
+        return h(MissionShell, {
+          title: "ภารกิจ 1 · หาจุดให้เจอ", goal: "แตะจุดอ้างอิงภายนอกที่การ์ดคำสั่งกำหนด",
+          stepLabel: found ? "สำเร็จ" : "แตะบนภาพ",
+          instruction: found ? h(Fragment, null, "เส้นอ้างอิงลากจาก tragus/EAM ไปยังชุด EVD แล้ว", h("br"), "จุดศูนย์ของชุดระบายต้องอยู่บนเส้นนี้ (ภารกิจ 2)") : h(Fragment, null, "การ์ดคำสั่ง: จุดอ้างอิง ", h("b", null, c.order.reference), h("br"), "ผู้ป่วย", c.order.position, " — แตะจุดนั้นบนภาพ"),
+          scene: h(EvdScene, { hobDeg: hob, setup, onTap, tapMarks: marks, showRefLine: found, view, showDrainMarker: found }),
+          zoom: h(ZoomBar, { view, setView, options: [{ id: "head", label: "ซูมศีรษะ" }, { id: "all", label: "ภาพรวม" }] }),
+          feedback: fb, hint: "มองหาติ่งเนื้อเล็กด้านหน้ารูหู (tragus) ไม่ใช่จุดที่ปิดแผลบนศีรษะ", onHint: tr.hint, onRetry: retry,
+          children: found && h("button", { className: "btn primary", onClick: () => finish("จุดอ้างอิง tragus/EAM ใช้เป็นจุดอ้างอิงภายนอกในท่าที่กำหนด ขั้นต่อไปจัดจุดศูนย์ให้ตรงเส้นนี้") }, "ไปต่อ")
+        });
+      }
+
+      const fmtSigned = v => `${v > 0 ? "+" : ""}${Number.isInteger(v) ? v : v.toFixed(1)}`;
+      function makeHandlers(setup, setSetup, targetZero, targetDrain, snapOn, step = 0.5, range = 1) {
+        const tickMove = (prev, next) => { if (Math.abs(prev - next) >= 1e-9) sfx(Math.abs(next - targetZero) < TOL ? "align" : "tick"); };
+        const clampZ = v => Math.max(targetZero - 20, Math.min(targetZero + 20, v));
+        const applyZ = v => { tickMove(setup.zeroCm, v); setSetup({ ...setup, zeroCm: v }); };
+        const setZ = v => applyZ(clampZ(snapBand(snapStep(v, targetZero, step), targetZero, range, snapOn)));
+        const clampD = v => Math.max(-5, Math.min(25, v));
+        const applyD = v => { if (Math.abs(setup.drainOffsetCm - v) >= 1e-9) sfx("tick"); setSetup({ ...setup, drainOffsetCm: v }); };
+        return {
+          zero: {
+            onDrag: setZ,
+            up: () => applyZ(clampZ(snapStep(setup.zeroCm + step, targetZero, step))),
+            down: () => applyZ(clampZ(snapStep(setup.zeroCm - step, targetZero, step))),
+            errorText: () => { const d = setup.zeroCm - targetZero; return Math.abs(d) < TOL ? "ตรงเส้นอ้างอิง" : `${d > 0 ? "สูงกว่า" : "ต่ำกว่า"} ${Math.abs(d).toFixed(1)} cm`; }
+          },
+          drain: {
+            onDrag: v => applyD(clampD(snapBand(snapStep(v, targetDrain, step), targetDrain, range, snapOn))),
+            up: () => applyD(clampD(setup.drainOffsetCm + step)),
+            down: () => applyD(clampD(setup.drainOffsetCm - step))
+          }
+        };
+      }
+
+      function Mission2({ tr, retry, finish, ok, learning }) {
+        const c = useCase(), hob = c.order.hobDeg, ord = c.order.drainLevelCm, baseZ = refCm(hob);
+        const [setup, setSetup] = useState({ zeroCm: baseZ + c.mission2.zeroStartOffsetCm, drainOffsetCm: c.mission2.drainStartOffsetCm });
+        const [step, setStep] = useState("A"), [fb, setFb] = useState(null), [risk, setRisk] = useState(null), [view, setView] = useState("all");
+        const hdl = makeHandlers(setup, setSetup, baseZ, ord, learning, c.mission2.stepCm, c.mission2.snapRangeCm);
+        const checkZero = () => {
+          const err = zeroErr(setup, hob);
+          if (Math.abs(err) < TOL) { ok(); setStep("B"); setRisk(null); setFb({ kind: "ok", text: "จุดศูนย์ตรงแล้ว", sub: "ขั้นต่อไปตั้งระดับระบายตามคำสั่ง" }); }
+          else { tr.miss("m2-zero"); const act = ord + err; setRisk({ r: levelStatus(act, ord), actual: act }); setFb({ kind: "bad", text: `จุดศูนย์${err > 0 ? "สูงกว่า" : "ต่ำกว่า"}เส้นอ้างอิง ${Math.abs(err).toFixed(1)} cm`, sub: "ถ้าตั้งระดับจากจุดศูนย์นี้ ระดับระบายจริงจะคลาดจากที่สั่ง" }); }
+        };
+        const checkDrain = () => {
+          const act = drainErr(setup, hob), st = levelStatus(act, ord);
+          if (st === "ok") finish(`ตั้งระดับ +${ord} cmH₂O เหนือ tragus/EAM แล้ว · ระดับที่สั่งไม่ใช่ค่า ICP และความสูงชุดระบายไม่ใช่ปริมาณ CSF`);
+          else { tr.miss("m2-level"); setRisk({ r: st, actual: act }); setFb({ kind: "bad", text: `ตอนนี้ ${act > 0 ? "+" : ""}${act.toFixed(1)} cmH₂O · คำสั่งคือ +${ord}` }); }
+        };
+        return h(MissionShell, {
+          title: "ภารกิจ 2 · ศูนย์ตรง ระดับถูก", goal: "จัดจุดศูนย์ให้ตรงเส้นอ้างอิง แล้วตั้งระดับระบายตามคำสั่ง",
+          stepLabel: step === "A" ? "ขั้น A/B" : "ขั้น B/B",
+          instruction: step === "A"
+            ? h(Fragment, null, "ขั้น A: เลื่อนแผงชุดระบายขึ้น–ลง ให้ ", h("b", { className: "t-teal" }, "จุดศูนย์ (0)"), " ตรงเส้นอ้างอิง")
+            : h(Fragment, null, "ขั้น B: เลื่อน ", h("b", { className: "t-sky" }, "ระดับระบาย"), " ให้อยู่ ", h("b", null, "+", ord, " cmH₂O"), " เหนือจุดศูนย์", h("br"), h("span", { className: "muted" }, "ระดับที่สั่ง ≠ ค่า ICP · ความสูง ≠ ปริมาณ CSF")),
+          scene: h(EvdScene, { hobDeg: hob, setup, showRefLine: true, showZeroGuide: learning, showDistance: step === "B", dragTarget: step === "A" ? "zero" : "drain", onDragZero: hdl.zero.onDrag, onDragDrain: hdl.drain.onDrag, highlight: step === "A" ? "zero" : "drain", view }),
+          zoom: h(ZoomBar, { view, setView, options: [{ id: "all", label: "ภาพรวม" }, { id: "scale", label: "ซูมสเกล" }, { id: "head", label: "ซูมศีรษะ" }] }),
+          feedback: fb,
+          hint: step === "A" ? "ดูเส้นประสีเขียวอมฟ้าจากหู — เลื่อนแผงจนวงกลม 0 อยู่บนเส้นนั้น" : `นับจากเลข 0 บนแผงขึ้นไป ${ord} ช่อง (1 ช่อง = 1 cm)`,
+          onHint: tr.hint, onRetry: retry,
+          children: [
+            step === "A"
+              ? h(Fragment, null, h(Nudge, { label: "จุดศูนย์เทียบเส้นอ้างอิง", value: hdl.zero.errorText(), onUp: hdl.zero.up, onDown: hdl.zero.down }), h("small", { className: "muted" }, "ลากแผงสเกลบนภาพ หรือกด ▲▼ (ครั้งละ 0.5 cm)", learning ? ` · ${SNAP_NOTE}` : ""))
+              : h(Fragment, null, h(Nudge, { label: "ระดับระบาย (จากจุดศูนย์)", value: `${fmtSigned(setup.drainOffsetCm)} cmH₂O`, onUp: hdl.drain.up, onDown: hdl.drain.down }), h("small", { className: "muted" }, "ลากกระเปาะหยดบนภาพ หรือกด ▲▼", learning ? ` · ${SNAP_NOTE}` : "")),
+            risk && h(RiskChart, { risk: risk.r, actual: risk.actual, ordered: ord }),
+            h("button", { className: "btn primary", onClick: step === "A" ? checkZero : checkDrain }, step === "A" ? "ยืนยันจุดศูนย์" : "ยืนยันระดับระบาย")
+          ]
+        });
+      }
+
+      const M3_STEPS = ["card", "close", "move", "relevel", "restore"];
+      function Mission3({ tr, retry, finish, ok, learning }) {
+        const c = useCase(), chg = c.mission3.change, ord = c.order.drainLevelCm;
+        const hobAnim = useSmoothAngle(chg.fromHobDeg), liftAnim = useSmoothAngle(0);
+        const liftTarget = chg.type === "lift" ? chg.liftCm : 0;
+        const [setup, setSetup] = useState({ zeroCm: refCm(chg.fromHobDeg), drainOffsetCm: ord });
+        const [stopcock, setStopcock] = useState("OPEN_TO_DRAIN"), [step, setStep] = useState("card"), [fb, setFb] = useState(null), [view, setView] = useState("all"), [moving, setMoving] = useState(false);
+        const cards = useMemo(() => [...c.mission3.cards].sort(() => Math.random() - 0.5), [c.mission3.cards]);
+        const newRef = refCm(hobAnim.angle, liftAnim.angle);
+        const hdl = makeHandlers(setup, setSetup, refCm(chg.toHobDeg, liftTarget), ord, learning);
+        const pickCard = card => {
+          if (card.correct) { ok(); setFb({ kind: "ok", text: card.feedback }); setStep("close"); }
+          else { tr.miss("m3-order"); setFb({ kind: "bad", text: card.feedback }); }
+        };
+        const confirmClose = () => {
+          if (stopcock === "CLOSED_TO_DRAIN") { ok(); setStep("move"); setFb({ kind: "ok", text: "ปิดทางไปกระเปาะระบายแล้ว", sub: "ผู้ป่วยยังติดต่อกับ transducer · ไม่มี CSF ไหลออกระหว่างขยับเตียง" }); }
+          else { tr.miss("m3-open-move"); setFb({ kind: "bad", text: "ยังเปิดระบายอยู่", sub: "ถ้าขยับเตียงขณะเปิดระบาย ระดับจะคลาดทันที ตามคำสั่งให้ปิดทางไปกระเปาะระบายชั่วคราวก่อน" }); }
+        };
+        const doMove = async () => {
+          setMoving(true); setFb(null); sfx("motor", { duration: 1.4 });
+          if (chg.type === "lift") await liftAnim.animateTo(liftTarget); else await hobAnim.animateTo(chg.toHobDeg);
+          setMoving(false); setStep("relevel");
+          const diff = refCm(chg.toHobDeg, liftTarget) - refCm(chg.fromHobDeg);
+          setFb({ kind: "info", text: `ศีรษะ${diff > 0 ? "สูงขึ้น" : "ต่ำลง"} ${Math.abs(diff).toFixed(1)} cm แต่ชุดระบายยังอยู่ที่เดิม`, sub: `เส้นอ้างอิงย้ายตามผู้ป่วย ถ้าไม่จัดใหม่ ${diff > 0 ? "ระดับระบายจริงจะต่ำกว่าที่สั่ง" : "ระดับระบายจริงจะสูงกว่าที่สั่ง"}` });
+        };
+        const confirmRelevel = () => {
+          const err = zeroErr(setup, hobAnim.angle, liftAnim.angle);
+          if (Math.abs(err) < TOL) { ok(); setStep("restore"); setFb({ kind: "ok", text: "จุดศูนย์ตรงเส้นอ้างอิงใหม่แล้ว", sub: `ระดับระบายยังเป็น +${setup.drainOffsetCm} cmH₂O จากจุดศูนย์` }); }
+          else { tr.miss("m3-relevel"); setFb({ kind: "bad", text: `จุดศูนย์${err > 0 ? "สูงกว่า" : "ต่ำกว่า"}เส้นอ้างอิงใหม่ ${Math.abs(err).toFixed(1)} cm` }); }
+        };
+        const confirmRestore = () => {
+          const errs = checkRestore({ setup, hobDeg: hobAnim.angle, liftCm: liftAnim.angle, stopcock }, { hobDeg: chg.toHobDeg, liftCm: liftTarget, drainLevelCm: ord, drainMode: c.order.drainMode });
+          if (errs.length === 0) finish("เปลี่ยนท่าแล้วตรวจ จัดระดับใหม่ และคืนสถานะเปิดระบายตามคำสั่งครบถ้วน");
+          else { tr.miss("m3-restore"); setFb({ kind: "bad", text: "ยังจบภารกิจไม่ได้", sub: errs.join(" · ") }); }
+        };
+        const actDrain = drainErr(setup, hobAnim.angle, liftAnim.angle), rsk = levelStatus(actDrain, ord);
+        const instrs = {
+          card: h(Fragment, null, c.mission3.orderText, h("br"), "เลือกบัตรที่ควรทำ ", h("b", null, "เป็นอันดับแรก")),
+          close: h(Fragment, null, "ก่อนขยับเตียง ตั้งสถานะระบบตามคำสั่ง: ", h("b", null, "ปิดทางไปกระเปาะระบายชั่วคราว"), h("br"), h("span", { className: "muted" }, "ดูแผนภาพ: ทางใดปิด ทางใดยังติดต่อกับผู้ป่วย")),
+          move: h(Fragment, null, "ระบบพร้อมแล้ว กดปุ่ม “", c.mission3.actionLabel, "” ตามคำสั่ง แล้วสังเกตเส้นอ้างอิง"),
+          relevel: h(Fragment, null, "ผู้ป่วยขยับแล้ว: เลื่อนแผงให้ ", h("b", { className: "t-teal" }, "จุดศูนย์"), " ตรงเส้นอ้างอิงใหม่"),
+          restore: h(Fragment, null, "คืนสถานะระบบตามคำสั่ง (", h("b", null, c.order.drainModeText), ") แล้วกดจบภารกิจ")
+        };
+        return h(MissionShell, {
+          title: "ภารกิจ 3 · เตียงขยับ ต้องเช็กใหม่", goal: "เปลี่ยนท่าอย่างปลอดภัย แล้วคืนระบบให้ตรงคำสั่ง",
+          stepLabel: `ขั้น ${M3_STEPS.indexOf(step) + 1}/${M3_STEPS.length}`, instruction: instrs[step],
+          scene: h(EvdScene, { hobDeg: hobAnim.angle, liftCm: liftAnim.angle, setup, stopcock, showRefLine: true, showZeroGuide: learning && step === "relevel", showDistance: true, dragTarget: step === "relevel" ? "zero" : null, onDragZero: hdl.zero.onDrag, highlight: step === "relevel" ? "zero" : null, view }),
+          zoom: h(ZoomBar, { view, setView, options: [{ id: "all", label: "ภาพรวม" }, { id: "scale", label: "ซูมสเกล" }] }),
+          feedback: fb,
+          hint: { card: "ก่อนลงมือทำอะไร ต้องรู้คำสั่งและสถานะปัจจุบันของระบบก่อน", close: "เลือกสถานะที่ทางกระเปาะระบายเป็น “ปิด” ในแผนภาพ", move: `กดปุ่ม “${c.mission3.actionLabel}” แล้วสังเกตเส้นอ้างอิง`, relevel: newRef > setup.zeroCm ? "ศีรษะสูงขึ้น จุดศูนย์ต้องสูงขึ้นตาม กด ▲ หรือลากแผงขึ้น" : "ศีรษะต่ำลง จุดศูนย์ต้องต่ำลงตาม กด ▼ หรือลากแผงลง", restore: "คำสั่งของกรณีนี้คือเปิดระบายต่อเนื่อง" }[step],
+          onHint: tr.hint, onRetry: retry,
+          children: [
+            step === "card" && h("div", { className: "cards" }, cards.map(cd => h("button", { key: cd.id, className: "card-btn", onClick: () => pickCard(cd) }, cd.text))),
+            (step === "close" || step === "restore") && h(Fragment, null, h(StopcockDiagram, { state: stopcock }), h(ModeChips, { value: stopcock, onPick: setStopcock, options: ["OPEN_TO_DRAIN", "CLOSED_TO_DRAIN"] }), h("small", { className: "muted" }, "แผนภาพแสดงเส้นทางการไหล ไม่ได้แสดงทิศด้ามก๊อกของยี่ห้อใด ให้ทำตามคู่มืออุปกรณ์จริง")),
+            step === "close" && h("button", { className: "btn primary", onClick: confirmClose }, "ยืนยันก่อนขยับเตียง"),
+            step === "move" && h("button", { className: "btn primary", disabled: moving, onClick: doMove }, moving ? "กำลังปรับ…" : c.mission3.actionLabel),
+            step === "relevel" && h(Fragment, null, h(Nudge, { label: "จุดศูนย์เทียบเส้นอ้างอิง", value: hdl.zero.errorText(), onUp: hdl.zero.up, onDown: hdl.zero.down }), Math.abs(newRef - setup.zeroCm) >= TOL && h(RiskChart, { risk: rsk, actual: actDrain, ordered: ord }), h("button", { className: "btn primary", onClick: confirmRelevel }, "ยืนยันจุดศูนย์ใหม่")),
+            step === "restore" && h("button", { className: "btn primary", onClick: confirmRestore }, "จบภารกิจ")
+          ]
+        });
+      }
+
+      function CylinderSvg({ ml, max = 30, time, eyeLine = true, cloudy = false }) {
+        const yFor = v => 370 - v / max * 330, yTop = yFor(ml);
+        return h("svg", { className: "cylinder-svg", viewBox: "50 0 290 420", role: "img", "aria-label": `กระบอกตวง CSF เวลา ${time} น.` },
+          h("rect", { x: 0, y: 0, width: 360, height: 420, fill: "#f4f8fc" }),
+          h("text", { x: 180, y: 24, textAnchor: "middle", fontSize: 16, fontWeight: 700, fill: "#12355b" }, "กระบอกตวง CSF · ", time, " น."),
+          h("path", { d: `M 120 ${yTop - 4} Q ${120 + 35} ${yTop + 6} 190 ${yTop - 4} L 190 370 L 120 370 Z`, fill: cloudy ? "#e2dcc4" : "#f4e7a1" }),
+          h("rect", { x: 120, y: 40, width: 70, height: 330, rx: 6, fill: "none", stroke: "#1d4e7e", strokeWidth: 3 }),
+          Array.from({ length: max + 1 }, (_, v) => {
+            const maj = v % 5 === 0;
+            return h("g", { key: v },
+              h("line", { x1: 120, x2: 120 + (maj ? 26 : 14), y1: yFor(v), y2: yFor(v), stroke: "#12355b", strokeWidth: maj ? 2 : 1 }),
+              maj && h("text", { x: 110, y: yFor(v) + 5, textAnchor: "end", fontSize: 15, fontWeight: 700, fill: "#12355b" }, v)
+            );
+          }),
+          h("text", { x: 198, y: 46, fontSize: 14, fill: "#12355b", fontWeight: 700 }, "mL"),
+          eyeLine && h("g", null,
+            h("line", { x1: 196, x2: 330, y1: yTop + 1, y2: yTop + 1, stroke: "#0f9b8e", strokeWidth: 2, strokeDasharray: "6 4" }),
+            h("g", { transform: `translate(312 ${yTop + 1})` }, h("path", { d: "M -16 0 Q 0 -11 16 0 Q 0 11 -16 0 Z", fill: "#fff", stroke: "#0f9b8e", strokeWidth: 2 }), h("circle", { r: 4.5, fill: "#12355b" })),
+            h("text", { x: 258, y: yTop - 12, textAnchor: "middle", fontSize: 12, fill: "#0f7a70", fontWeight: 700 }, "ระดับสายตา"),
+            h("text", { x: 258, y: yTop + 22, textAnchor: "middle", fontSize: 11, fill: "#0f7a70" }, "อ่านที่ท้องโค้ง")
+          )
+        );
+      }
+
+      function NumField({ label, value, set, unit, testId }) {
+        const num = Number(value) || 0;
+        return h("label", { className: "numfield" },
+          h("span", null, label),
+          h("span", { className: "numrow" },
+            h("button", { type: "button", className: "nbtn sm", onClick: () => set(String(Math.max(0, num - 1))), "aria-label": "ลด" }, "−"),
+            h("input", { inputMode: "decimal", value, onChange: e => set(e.target.value.replace(/[^0-9.]/g, "")), "data-testid": testId }),
+            h("button", { type: "button", className: "nbtn sm", onClick: () => set(String(num + 1)), "aria-label": "เพิ่ม" }, "+"),
+            h("b", null, unit)
+          )
+        );
+      }
+
+      function Mission4({ tr, retry, finish, ok }) {
+        const m4 = useCase().mission4;
+        const [step, setStep] = useState("read"), [fb, setFb] = useState(null), [cumIn, setCumIn] = useState(""), [intIn, setIntIn] = useState(""), [ans, setAns] = useState({}), [badIds, setBadIds] = useState([]);
+        const interval = calcInterval({ value: m4.prevCumulativeMl, unit: "mL" }, { value: m4.currCumulativeMl, unit: "mL" }, m4.emptiedBetween);
+        const checkRead = () => {
+          const n = Number(cumIn);
+          if (n === m4.currCumulativeMl) { ok(); setStep("interval"); setFb({ kind: "ok", text: `อ่านสะสมได้ ${n} mL ถูกต้อง` }); }
+          else { tr.miss("m4-read"); setFb({ kind: "bad", text: n === m4.prevCumulativeMl ? `${n} mL คือค่าสะสมเวลา ${m4.prevTime} น.` : "ยังไม่ตรง", sub: "อ่านที่ท้องโค้งของผิวของเหลว โดยตาอยู่ระดับเดียวกับผิวของเหลว" }); }
+        };
+        const checkInterval = () => {
+          const n = Number(intIn);
+          if (interval && n === interval.value) { ok(); setStep("record"); setFb({ kind: "ok", text: `${m4.currCumulativeMl} − ${m4.prevCumulativeMl} = ${n} mL ในช่วง ${m4.prevTime}–${m4.currTime} น.` }); }
+          else { tr.miss("m4-interval"); setFb({ kind: "bad", text: n === m4.currCumulativeMl ? `${n} mL คือปริมาณสะสม ไม่ใช่ปริมาณในช่วงเวลา` : "ยังไม่ตรง", sub: "ปริมาณในช่วงเวลา = สะสมตอนนี้ − สะสมครั้งก่อน (ไม่มีการเทหรือเปลี่ยนกระบอก)" }); }
+        };
+        const checkRecord = () => {
+          const wrong = m4.recordFields.filter(f => ans[f.id] !== f.answer).map(f => f.id);
+          setBadIds(wrong);
+          if (wrong.length === 0) finish(`บันทึกครบ: เวลา ท่า จุดอ้างอิง ระดับ+หน่วย สถานะ ปริมาณ ${interval?.value} mL/ช่วงเวลา ลักษณะ CSF และอาการ`);
+          else { tr.miss("m4-record"); const missing = wrong.filter(id => ans[id] === undefined).length; setFb({ kind: "bad", text: `ยังไม่ถูก ${wrong.length} ช่อง${missing ? ` (ยังไม่เลือก ${missing})` : ""}`, sub: "ตรวจหน่วย: ระดับระบายเป็น cmH₂O · ปริมาณเป็น mL พร้อมช่วงเวลา" }); }
+        };
+        const noteBox = pos => h("div", { className: `chart-note ${pos}` },
+          h("div", null, h("b", null, "บันทึกเดิม ", m4.prevTime, " น."), " สะสม ", m4.prevCumulativeMl, " mL"),
+          h("div", null, "ระหว่างนี้ ", h("b", null, "ไม่มีการเทหรือเปลี่ยนกระบอก")),
+          h("div", null, "ลักษณะ CSF: ", m4.csfAppearance),
+          h("div", null, m4.assessmentText)
+        );
+        return h(MissionShell, {
+          title: "ภารกิจ 4 · อ่านให้ถูก บันทึกให้ครบ", goal: `หาปริมาณ CSF ช่วง ${m4.prevTime}–${m4.currTime} น. แล้วบันทึกให้ครบ`,
+          stepLabel: { read: "ขั้น 1/3", interval: "ขั้น 2/3", record: "ขั้น 3/3" }[step],
+          instruction: {
+            read: h(Fragment, null, "อ่าน ", h("b", null, "ปริมาณสะสม"), " ในกระบอกตวงเวลา ", m4.currTime, " น. (mL)"),
+            interval: h(Fragment, null, "ช่วง ", m4.prevTime, "–", m4.currTime, " น. มี CSF ระบายกี่ mL?"),
+            record: h(Fragment, null, "เลือกข้อมูลให้ครบทุกช่องสำหรับบันทึกเวลา ", m4.currTime, " น.")
+          }[step],
+          scene: h("div", { className: "m4-stage" }, h(CylinderSvg, { ml: m4.currCumulativeMl, max: m4.cylinderMaxMl, time: m4.currTime }), noteBox("in-stage")),
+          feedback: fb,
+          hint: { read: "ขีดใหญ่ทุก 5 mL ขีดเล็กทุก 1 mL — นับขีดจากเลขใกล้ที่สุด", interval: `${m4.currCumulativeMl} − ${m4.prevCumulativeMl}`, record: "ระดับระบายใช้หน่วย cmH₂O ส่วนปริมาณ CSF ใช้ mL พร้อมช่วงเวลา" }[step],
+          onHint: tr.hint, onRetry: retry,
+          children: [
+            noteBox("in-panel"),
+            step === "read" && h(Fragment, null, h(NumField, { label: `ปริมาณสะสม ${m4.currTime} น.`, value: cumIn, set: setCumIn, unit: "mL", testId: "cum" }), h("button", { className: "btn primary", onClick: checkRead }, "ตรวจคำตอบ")),
+            step === "interval" && h(Fragment, null, h("div", { className: "twobox" }, h("div", { className: "box-locked" }, h("small", null, "ปริมาณสะสม (", m4.currTime, " น.)"), h("b", null, m4.currCumulativeMl, " mL")), h(NumField, { label: `ปริมาณในช่วง ${m4.prevTime}–${m4.currTime} น.`, value: intIn, set: setIntIn, unit: "mL", testId: "interval" })), h("button", { className: "btn primary", onClick: checkInterval }, "ตรวจคำตอบ")),
+            step === "record" && h(Fragment, null,
+              h("div", { className: "record-form" }, m4.recordFields.map(f => h("label", { key: f.id, className: `rf ${badIds.includes(f.id) ? "rf-bad" : ""}` },
+                h("span", null, f.label),
+                h("select", { value: ans[f.id] ?? "", onChange: e => setAns(a => ({ ...a, [f.id]: Number(e.target.value) })), "data-testid": `rf-${f.id}` },
+                  h("option", { value: "", disabled: true }, "— เลือก —"),
+                  f.options.map((opt, idx) => h("option", { key: idx, value: idx }, opt))
+                )
+              ))),
+              h("button", { className: "btn primary", onClick: checkRecord }, "บันทึก")
+            )
+          ]
+        });
+      }
+
+      function sampleItems(arr, n, rand = Math.random) {
+        return [...arr].map(e => ({ e, r: rand() })).sort((a, b) => a.r - b.r).slice(0, Math.min(n, arr.length)).map(x => x.e);
+      }
+
+      function EventsMission({ tr, retry, finish, ok }) {
+        const c = useCase();
+        const round = useMemo(() => sampleItems(c.events, c.eventsPerRound), []);
+        const [idx, setIdx] = useState(0), [solved, setSolved] = useState(false), [picked, setPicked] = useState([]), [fb, setFb] = useState(null);
+        const ev = round[idx];
+        const order = useMemo(() => ev.options.map((_, i) => i).sort(() => Math.random() - 0.5), [ev]);
+        const hob = c.order.hobDeg, setup = { zeroCm: refCm(hob), drainOffsetCm: c.order.drainLevelCm };
+        const choose = i => {
+          if (solved) return;
+          const opt = ev.options[i];
+          setPicked(p => [...p, i]);
+          if (opt.correct) { ok(); setSolved(true); setFb({ kind: "ok", text: "ถูกต้อง: ประเมินผู้ป่วย ตรวจสิ่งที่ตรวจได้อย่างปลอดภัย และรายงานทีม" }); }
+          else { tr.miss(`ev-${ev.id}`); setFb({ kind: "bad", text: opt.why ?? "ยังไม่ใช่" }); }
+        };
+        const nextEv = () => {
+          if (idx + 1 >= round.length) finish("สังเกตอาการ ตรวจระบบภายนอกอย่างปลอดภัย และรายงานตามเกณฑ์ของคำสั่ง");
+          else { setIdx(i => i + 1); setSolved(false); setPicked([]); setFb(null); }
+        };
+        return h(MissionShell, {
+          title: "เหตุการณ์สั้น · สังเกตแล้วรายงาน", goal: "เลือกการกระทำที่ปลอดภัยที่สุดต่อเหตุการณ์",
+          stepLabel: `${idx + 1}/${round.length}`,
+          instruction: h(Fragment, null, h("b", null, ev.title), h("br"), ev.cue),
+          scene: h(EvdScene, { hobDeg: hob, setup, showRefLine: true, event: ev.visual, cylinderMl: ev.visual.highFlow ? 28 : 14 }),
+          feedback: fb, hint: "ใช้เกณฑ์รายงานจากการ์ดคำสั่งของกรณีนี้ — เริ่มที่ผู้ป่วยก่อนเสมอ", onHint: tr.hint, onRetry: retry,
+          children: [
+            h("div", { className: "cards" }, order.map(i => {
+              const opt = ev.options[i];
+              return h("button", { key: i, className: `card-btn ${picked.includes(i) ? opt.correct ? "card-ok" : "card-bad" : ""}`, onClick: () => choose(i), disabled: solved }, opt.text);
+            })),
+            h("details", { className: "criteria" }, h("summary", null, "เกณฑ์รายงานของกรณีนี้"), h("ul", null, c.order.reportCriteria.slice(0, 5).map(x => h("li", { key: x }, x))), h("small", null, c.order.reportCriteriaNote)),
+            solved && h("button", { className: "btn primary", onClick: nextEv }, idx + 1 >= round.length ? "สรุปเหตุการณ์" : "เหตุการณ์ถัดไป")
+          ]
+        });
+      }
+
+      const ICP_STEPS = ["level", "zeroQ", "zeroDo", "measure", "wait", "record", "restore"];
+      function IcpMission({ tr, retry, finish, ok, learning }) {
+        const c = useCase(), icp = c.icp, hob = c.order.hobDeg, ord = c.order.drainLevelCm, baseZ = refCm(hob);
+        const [setup, setSetup] = useState({ zeroCm: baseZ + icp.zeroStartOffsetCm, drainOffsetCm: ord });
+        const [stopcock, setStopcock] = useState("OPEN_TO_DRAIN"), [step, setStep] = useState("level");
+        const [zeroed, setZeroed] = useState(false), [settled, setSettled] = useState(false), [waiting, setWaiting] = useState(false), [fb, setFb] = useState(null), [view, setView] = useState("all");
+        const hdl = makeHandlers(setup, setSetup, baseZ, ord, learning);
+        const recChoices = useMemo(() => [{ kind: "ok", text: `${icp.icpMmHg} mmHg` }, { kind: "unit", text: `${icp.icpMmHg} cmH₂O` }, { kind: "level", text: `+${ord} cmH₂O` }].sort(() => Math.random() - 0.5), [icp.icpMmHg, ord]);
+        const advance = (next, f) => { ok(); setStep(next); setFb(f); };
+        const dispVal = stopcock === "OFF_TO_PATIENT" ? (zeroed ? "0" : "—") : (stopcock === "CLOSED_TO_DRAIN" && zeroed ? (settled ? String(icp.icpMmHg) : "…") : "—");
+        const waveMode = stopcock === "OFF_TO_PATIENT" ? "flat" : (stopcock === "CLOSED_TO_DRAIN" && zeroed ? "live" : "none");
+        const checkLevel = () => {
+          const err = zeroErr(setup, hob);
+          if (Math.abs(err) < TOL) advance("zeroQ", { kind: "ok", text: "จุดศูนย์/transducer ตรงจุดอ้างอิงแล้ว (leveling)" });
+          else { tr.miss("icp-level"); setFb({ kind: "bad", text: `ยังคลาด ${Math.abs(err).toFixed(1)} cm`, sub: "transducer ต้องอยู่ระดับจุดอ้างอิงก่อนอ่าน ICP" }); }
+        };
+        const ansZeroQ = right => {
+          if (right) advance("zeroDo", { kind: "ok", text: "ถูกต้อง: leveling คือจัดระดับ ส่วน zeroing คือตั้งค่าศูนย์ของ transducer กับบรรยากาศ — คนละขั้นตอน" });
+          else { tr.miss("icp-zero-concept"); setFb({ kind: "bad", text: "การเลื่อนระดับระบบไม่เท่ากับการ zero เครื่อง", sub: icp.zeroRule }); }
+        };
+        const pressZero = () => {
+          if (stopcock === "OFF_TO_PATIENT") { sfx("beep"); setZeroed(true); advance("measure", { kind: "ok", text: "จอแสดง 0 mmHg — zero แล้ว", sub: "ต่อไปตั้งทางเดินระบบสำหรับวัด ICP" }); }
+          else { tr.miss("icp-zero-do"); setFb({ kind: "bad", text: "ยังไม่ได้เปิด transducer สู่อากาศ", sub: "ตามแบบจำลองนี้ ต้องปิดทางผู้ป่วยและเปิด transducer สู่อากาศก่อนกด zero (ทำตามคู่มืออุปกรณ์จริง)" }); }
+        };
+        const confirmMeasure = () => {
+          if (stopcock === "CLOSED_TO_DRAIN") advance("wait", { kind: "ok", text: "ผู้ป่วย ↔ transducer · ปิดทางระบาย พร้อมดู waveform" });
+          else { tr.miss("icp-measure-state"); setFb({ kind: "bad", text: stopcock === "OPEN_TO_DRAIN" ? "ขณะเปิดระบาย ค่าที่อ่านอาจไม่สะท้อน ICP" : "ทางผู้ป่วยยังปิดอยู่ จึงอ่าน ICP ไม่ได้" }); }
+        };
+        const doWait = () => {
+          setWaiting(true);
+          setTimeout(() => { setWaiting(false); setSettled(true); advance("record", { kind: "ok", text: "waveform ชัด ค่าคงที่แล้ว", sub: "เวลาถูกย่อเพื่อการเรียนรู้ ระยะเวลาจริงขึ้นกับอุปกรณ์และแนวปฏิบัติ" }); }, 1500);
+        };
+        const pickRec = kind => {
+          if (kind === "ok") advance("restore", { kind: "ok", text: `บันทึก ICP ${icp.icpMmHg} mmHg`, sub: `${icp.reportText} · ต่อไปคืนสถานะการระบายตามคำสั่ง` });
+          else { tr.miss("icp-unit"); setFb({ kind: "bad", text: kind === "unit" ? "ICP บนจอเป็น mmHg ไม่ใช่ cmH₂O" : `+${ord} cmH₂O คือระดับระบายที่สั่ง ไม่ใช่ค่า ICP ที่วัดได้` }); }
+        };
+        const finishIcp = () => {
+          const errs = checkRestore({ setup, hobDeg: hob, stopcock }, { hobDeg: hob, drainLevelCm: ord, drainMode: c.order.drainMode });
+          if (!zeroed) errs.push("ยังไม่ได้ zero");
+          if (errs.length === 0) finish("จัดระดับ → zero → ตั้งทางวัด → รอค่าคงที่ → บันทึก mmHg → คืนสถานะการระบายตามคำสั่ง");
+          else { tr.miss("icp-restore"); setFb({ kind: "bad", text: "ยังจบไม่ได้", sub: errs.join(" · ") }); }
+        };
+        const showStopcock = step === "zeroDo" || step === "measure" || step === "restore";
+        const instrs = {
+          level: h(Fragment, null, "ระบบ: ", h("b", null, icp.systemType), h("br"), "1) ตรวจจุดอ้างอิงและการจัดระดับ — จุดศูนย์/transducer ตรง tragus/EAM หรือไม่"),
+          zeroQ: h(Fragment, null, "2) zero ล่าสุดก่อนเปลี่ยนท่า · กฎของกรณีนี้: ", icp.zeroRule, h("br"), "ข้อใดถูก?"),
+          zeroDo: "3) zero: เลือกสถานะ “ปิดทางผู้ป่วย (สำหรับ zero)” แล้วกด Zero บนจอ",
+          measure: "4) ตั้งทางเดินระบบสำหรับวัด ICP",
+          wait: "5) ดู waveform และรอค่าคงที่ก่อนอ่าน",
+          record: "6) บันทึกค่าที่อ่านได้พร้อมหน่วย",
+          restore: h(Fragment, null, "7) คืนสถานะการระบายตามคำสั่ง (", c.order.drainModeText, " +", ord, " cmH₂O)")
+        };
+        return h(MissionShell, {
+          title: "ด่านเสริม · อ่าน ICP อย่างเข้าใจ", goal: "อ่าน ICP ให้ถูกวิธี แล้วคืนสถานะการระบายตามคำสั่ง",
+          stepLabel: `ขั้น ${ICP_STEPS.indexOf(step) + 1}/${ICP_STEPS.length}`, instruction: instrs[step],
+          scene: h(EvdScene, { hobDeg: hob, setup, stopcock, showRefLine: true, showTransducer: true, showDistance: false, dragTarget: step === "level" ? "zero" : null, onDragZero: hdl.zero.onDrag, highlight: step === "level" ? "zero" : null, icp: { show: true, value: dispVal, wave: waveMode, zeroed }, view }),
+          zoom: h(ZoomBar, { view, setView, options: [{ id: "all", label: "ภาพรวม" }, { id: "scale", label: "ซูมสเกล" }] }),
+          feedback: fb,
+          hint: { level: "transducer อยู่ที่ระดับจุดศูนย์ เลื่อนแผงให้ 0 ตรงเส้นอ้างอิง", zeroQ: "เลื่อนระดับ = leveling ไม่ใช่ zeroing", zeroDo: "ดูแผนภาพ: transducer ต้องเปิดสู่อากาศ และทางผู้ป่วยต้องปิด", measure: "ทางผู้ป่วยต้องติดต่อกับ transducer และปิดทางกระเปาะระบาย", wait: "กด “รอค่าคงที่” ก่อน", record: "ICP อ่านเป็น mmHg ส่วนระดับระบายเป็น cmH₂O", restore: "คำสั่งของกรณีนี้คือเปิดระบายต่อเนื่อง" }[step],
+          onHint: tr.hint, onRetry: retry,
+          children: [
+            step === "level" && h(Fragment, null, h(Nudge, { label: "จุดศูนย์เทียบเส้นอ้างอิง", value: hdl.zero.errorText(), onUp: hdl.zero.up, onDown: hdl.zero.down }), h("button", { className: "btn primary", onClick: checkLevel }, "ยืนยันการจัดระดับ")),
+            step === "zeroQ" && h("div", { className: "cards" },
+              h("button", { className: "card-btn", onClick: () => ansZeroQ(false) }, "ไม่ต้อง zero เพราะเพิ่งเลื่อนแผงให้ตรงแล้ว ถือว่า zero แล้ว"),
+              h("button", { className: "card-btn", onClick: () => ansZeroQ(true) }, "ต้อง zero ตามคู่มืออุปกรณ์และแนวปฏิบัติ — การจัดระดับไม่ใช่การ zero")
+            ),
+            showStopcock && h(Fragment, null, h(StopcockDiagram, { state: stopcock, showAir: true }), h(ModeChips, { value: stopcock, onPick: setStopcock, options: ["OPEN_TO_DRAIN", "CLOSED_TO_DRAIN", "OFF_TO_PATIENT"] }), h("small", { className: "muted" }, "เลือกจากป้ายสถานะและเส้นทางการไหล ไม่ใช่เดาจากทิศด้ามก๊อก — ตำแหน่งก๊อกจริงต่างกันตามยี่ห้อ ให้ทำตามคู่มืออุปกรณ์")),
+            step === "zeroDo" && h("button", { className: "btn primary", onClick: pressZero }, "กด Zero บนจอ"),
+            step === "measure" && h("button", { className: "btn primary", onClick: confirmMeasure }, "ยืนยันสถานะสำหรับวัด"),
+            step === "wait" && h("div", { className: "row" },
+              h("button", { className: "btn primary", onClick: doWait, disabled: waiting }, waiting ? "กำลังรอ…" : "รอค่าคงที่"),
+              h("button", { className: "btn", onClick: () => { tr.miss("icp-wait"); setFb({ kind: "bad", text: "ยังไม่ควรอ่าน", sub: "ดู waveform และรอค่าคงที่ก่อนบันทึก" }); } }, "บันทึกค่าเลย"),
+              h("small", { className: "muted" }, "เวลาในเกมถูกย่อเพื่อการเรียนรู้ ไม่ได้กำหนดระยะเวลาเดียวใช้กับอุปกรณ์ทุกรุ่น")
+            ),
+            step === "record" && h("div", { className: "cards" }, recChoices.map(rc => h("button", { key: rc.kind, className: "card-btn", onClick: () => pickRec(rc.kind) }, "บันทึก ICP = ", rc.text))),
+            step === "restore" && h("button", { className: "btn primary", onClick: finishIcp }, "จบด่านเสริม")
+          ]
+        });
+      }
+
+      const TUT_SLIDES = cm => [
+        { hl: "evd", view: "all", title: "ผู้ป่วยหลังผ่าตัดกะโหลกศีรษะที่มีสาย EVD", text: "สาย EVD ออกจากศีรษะไปยังชุดระบายบนเสา ใบหูเป็นเพียงจุดอ้างอิงภายนอก ไม่มีสายต่อเข้าหู" },
+        { hl: "tragus", view: "head", title: "1 · เห็นจุด", text: "จุดอ้างอิงตามคำสั่งของกรณีนี้คือ tragus/EAM", ref: true },
+        { hl: "zero", view: "scale", title: "2 · จัดศูนย์", text: "เลื่อนแผงให้จุดศูนย์ (0) ตรงเส้นอ้างอิงจากผู้ป่วย", ref: true },
+        { hl: "drain", view: "scale", title: "3 · ตั้งตามคำสั่ง", text: `ระดับระบายแยกจากจุดศูนย์ ตั้ง +${cm} cmH₂O ตามคำสั่งสมมติ · ไม่ใช่ค่า ICP`, ref: true, dist: true },
+        { hl: "cylinder", view: "cylinder", title: "4 · อ่านค่า → 5 · บันทึก", text: "อ่าน CSF เป็น mL ที่ระดับสายตา · ความสูงชุดระบายไม่ใช่ปริมาณ CSF", ref: true, dist: true },
+        { hl: null, view: "all", title: "เปลี่ยนท่า = ตรวจและจัดระดับใหม่", text: "ทุกภารกิจมีคำใบ้ ข้อเสนอแนะทันที และปุ่มลองใหม่ ไม่จับเวลา", ref: true, dist: true }
+      ];
+
+      function Tutorial({ onDone, onSkip }) {
+        const c = useCase(), hob = c.order.hobDeg, slides = TUT_SLIDES(c.order.drainLevelCm);
+        const [idx, setIdx] = useState(0), sl = slides[idx];
+        const setup = { zeroCm: refCm(hob), drainOffsetCm: c.order.drainLevelCm };
+        return h("div", { className: "mission tutorial" },
+          h("section", { className: "stage" }, h("div", { className: "scene-wrap" }, h(EvdScene, { hobDeg: hob, setup, highlight: sl.hl, view: sl.view, showRefLine: sl.ref, showDistance: sl.dist, cylinderMl: 12 }))),
+          h("aside", { className: "panel" },
+            h("div", { className: "mtitle" }, "Tutorial · ประมาณ 1 นาที", h("span", { className: "step" }, idx + 1, "/", slides.length)),
+            h("h3", { className: "tut-title" }, sl.title),
+            h("p", { className: "instr" }, sl.text),
+            h("div", { className: "flow" }, ["เห็นจุด", "จัดศูนย์", "ตั้งตามคำสั่ง", "อ่านค่า", "บันทึก"].map((f, i) => h("span", { key: f, className: `flow-step ${i + 1 <= idx ? "on" : ""}` }, f))),
+            h("div", { className: "row" },
+              idx > 0 && h("button", { className: "btn", onClick: () => setIdx(i => i - 1) }, "ย้อนกลับ"),
+              idx < slides.length - 1 ? h("button", { className: "btn primary", onClick: () => setIdx(i => i + 1) }, "ถัดไป") : h("button", { className: "btn primary", onClick: onDone }, "เริ่มภารกิจ 1"),
+              h("button", { className: "btn ghost", onClick: onSkip }, "ข้าม")
+            )
+          )
+        );
+      }
+
+      // Code & Storage
+      const CODE_PRE = "EVD1", ALL_M = ["m1", "m2", "m3", "m4", "events", "icp"], CORE_M = ["m1", "m2", "m3", "m4"];
+      function fnv1a(str) {
+        let hash = 2166136261;
+        for (let i = 0; i < str.length; i++) { hash ^= str.charCodeAt(i); hash = Math.imul(hash, 16777619) >>> 0; }
+        return hash.toString(36).padStart(7, "0");
+      }
+      const b64Encode = s => btoa(String.fromCharCode(...new TextEncoder().encode(s))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+      const b64Decode = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((s.length + 3) % 4)), c => c.charCodeAt(0)));
+      function buildPayload(prog, st, now = new Date()) {
+        const m = {}, x = {}, d = {};
+        for (const k of ALL_M) {
+          const item = prog.missions[k];
+          if (item) { m[k] = [item.stars, item.plays]; if (item.mistakeTags.length) x[k] = item.mistakeTags; }
+          const done = prog.casesDone?.[k];
+          if (done?.length) d[k] = done;
+        }
+        return { v: 1, n: st.name.trim(), s: st.id.trim(), g: st.group.trim(), t: now.toISOString(), m, d, x };
+      }
+      function encodeCode(payload) { const body = b64Encode(JSON.stringify(payload)); return `${CODE_PRE}.${body}.${fnv1a(CODE_PRE + body)}`; }
+      function decodeCode(raw) {
+        const t = raw.trim(), parts = t.split(".");
+        if (parts.length !== 3 || parts[0] !== CODE_PRE) return { ok: false, error: "รูปแบบรหัสไม่ถูกต้อง", code: t };
+        if (fnv1a(CODE_PRE + parts[1]) !== parts[2]) return { ok: false, error: "รหัสไม่ครบหรือถูกแก้ไข (checksum ไม่ตรง)", code: t };
+        try { const data = JSON.parse(b64Decode(parts[1])); return data.v !== 1 ? { ok: false, error: "รุ่นของรหัสไม่รองรับ", code: t } : { ok: true, data, code: t }; }
+        catch { return { ok: false, error: "อ่านข้อมูลในรหัสไม่ได้", code: t }; }
+      }
+      const totalStarsOf = p => ALL_M.reduce((s, k) => s + (p.m[k]?.[0] ?? 0), 0);
+      const tagLabel = t => t.startsWith("ev-") ? (EVENTS.find(e => `ev-${e.id}` === t) ? `เหตุการณ์: ${EVENTS.find(e => `ev-${e.id}` === t).title}` : t) : (TAG_TEXT[t] ?? t);
+
+      const STORE_KEY = "evd-level-up-v1";
+      const defaultState = () => ({ version: 1, tutorialDone: false, missions: {}, settings: { sound: true, music: false, learningMode: true }, currentCase: "", casesDone: {}, student: { name: "", id: "", group: "" } });
+      const mem = new Map(), memStore = { getItem: k => mem.get(k) ?? null, setItem: (k, v) => void mem.set(k, v), removeItem: k => void mem.delete(k) };
+      function storage() { try { if (typeof localStorage !== "undefined") { localStorage.getItem("_"); return localStorage; } } catch {} return memStore; }
+      function loadState(st = storage()) {
+        try {
+          const raw = st.getItem(STORE_KEY); if (!raw) return defaultState();
+          const p = JSON.parse(raw);
+          return p.version !== 1 ? defaultState() : { ...defaultState(), ...p, settings: { ...defaultState().settings, ...p.settings }, student: { ...defaultState().student, ...p.student } };
+        } catch { return defaultState(); }
+      }
+      function saveState(v, st = storage()) { try { st.setItem(STORE_KEY, JSON.stringify(v)); } catch {} }
+
+      const MISSIONS_META = [
+        { id: "m1", title: "ภารกิจ 1 · หาจุดให้เจอ", skill: "อ่านคำสั่งและหาจุดอ้างอิง", short: "เห็นจุด" },
+        { id: "m2", title: "ภารกิจ 2 · ศูนย์ตรง ระดับถูก", skill: "จัดระดับจุดศูนย์และตั้งระดับระบาย", short: "จัดศูนย์ → ตั้งตามคำสั่ง" },
+        { id: "m3", title: "ภารกิจ 3 · เตียงขยับ ต้องเช็กใหม่", skill: "เปลี่ยนท่าแล้วตรวจและจัดระดับใหม่", short: "เปลี่ยนท่าอย่างปลอดภัย" },
+        { id: "m4", title: "ภารกิจ 4 · อ่านให้ถูก บันทึกให้ครบ", skill: "อ่านปริมาณ CSF และบันทึก", short: "อ่านค่า → บันทึก" },
+        { id: "events", title: "เหตุการณ์สั้น · สังเกตแล้วรายงาน", skill: "ตรวจพบความผิดปกติและรายงาน", short: "สังเกต → รายงาน" },
+        { id: "icp", title: "ด่านเสริม · อ่าน ICP อย่างเข้าใจ", skill: "อ่าน ICP (เสริม)", short: "leveling ≠ zeroing" }
+      ];
+      const coreDone = s => CORE_M.every(id => (s.missions[id]?.stars ?? 0) > 0);
+
+      function CodeBox({ prog, setStudent }) {
+        const [code, setCode] = useState(""), [msg, setMsg] = useState("");
+        const taRef = useRef(null), st = prog.student, hasAny = ALL_M.some(k => prog.missions[k]);
+        const gen = () => {
+          if (!st.name.trim() || !st.id.trim()) { setMsg("กรอกชื่อและรหัสนิสิตก่อน"); return; }
+          if (!hasAny) { setMsg("ยังไม่มีผลการเล่น เล่นอย่างน้อย 1 ภารกิจก่อน"); return; }
+          setCode(encodeCode(buildPayload(prog, st)));
+          setMsg("สร้างรหัสแล้ว กด “คัดลอกรหัส” แล้ววางในช่องส่งงานของ LMS");
+        };
+        const copy = async () => {
+          try { await navigator.clipboard.writeText(code); setMsg("คัดลอกแล้ว นำไปวางในช่องส่งงานของ LMS ได้เลย"); }
+          catch { taRef.current?.focus(); taRef.current?.select(); setMsg("คัดลอกอัตโนมัติไม่ได้ รหัสถูกเลือกไว้แล้ว กด Ctrl+C"); }
+        };
+        return h("section", { className: "report-box" },
+          h("h3", null, "ส่งผลให้ผู้สอน"),
+          h("p", { className: "muted small" }, "ผลการเล่นเก็บในเครื่องนี้เท่านั้น สร้าง “รหัสผลการเล่น” แล้วคัดลอกไปส่งในช่องส่งงานของ LMS"),
+          h("div", { className: "rb-fields" },
+            h("label", null, "ชื่อ–สกุล", h("input", { value: st.name, onChange: e => setStudent({ ...st, name: e.target.value }) })),
+            h("label", null, "รหัสนิสิต", h("input", { value: st.id, inputMode: "numeric", onChange: e => setStudent({ ...st, id: e.target.value }) })),
+            h("label", null, "กลุ่ม/เซกชัน", h("input", { value: st.group, onChange: e => setStudent({ ...st, group: e.target.value }), placeholder: "ไม่บังคับ" }))
+          ),
+          h("div", { className: "row" },
+            h("button", { className: "btn primary", onClick: gen }, "สร้างรหัสผลการเล่น"),
+            code && h("button", { className: "btn", onClick: copy }, "คัดลอกรหัส")
+          ),
+          code && h("textarea", { ref: taRef, className: "code-out", readOnly: true, value: code, rows: 3, onFocus: e => e.currentTarget.select() }),
+          msg && h("div", { className: "fb fb-info", role: "status" }, msg)
+        );
+      }
+
+      function TeacherPage({ go }) {
+        const [raw, setRaw] = useState(""), [csvMsg, setCsvMsg] = useState(""), csvRef = useRef(null);
+        const { rows, bad, dupes } = useMemo(() => {
+          const matches = raw.match(/EVD1\.[A-Za-z0-9_-]+\.[0-9a-z]{7}/g) ?? [];
+          const parsed = matches.map(decodeCode);
+          const okList = parsed.filter(x => x.ok).map(x => x.data);
+          const map = new Map();
+          for (const item of okList) {
+            const key = (item.s || item.n).toLowerCase(), prev = map.get(key);
+            if (!prev || prev.t < item.t) map.set(key, item);
+          }
+          const uniq = [...map.values()].sort((a, b) => a.s.localeCompare(b.s) || a.n.localeCompare(b.n, "th"));
+          return { rows: uniq, bad: parsed.filter(x => !x.ok), dupes: okList.length - uniq.length };
+        }, [raw]);
+        const csv = useMemo(() => {
+          const esc = v => /[",\n]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : String(v);
+          const hdr = ["รหัสนิสิต", "ชื่อ", "กลุ่ม", "เวลาสร้างรหัส", ...ALL_M.map(k => `ดาว ${k}`), "ดาวรวม", "จุดที่ควรฝึก"];
+          const lines = rows.map(r => [r.s, r.n, r.g, r.t, ...ALL_M.map(k => r.m[k]?.[0] ?? ""), totalStarsOf(r), Object.values(r.x).flat().map(tagLabel).join("; ")].map(esc).join(","));
+          return [hdr.map(esc).join(","), ...lines].join("\n");
+        }, [rows]);
+        const avg = rows.length ? (rows.reduce((s, r) => s + totalStarsOf(r), 0) / rows.length).toFixed(1) : "0.0";
+        const full4 = rows.filter(r => CORE_M.every(k => r.m[k])).length;
+        return h("div", { className: "page wide" },
+          h("h2", null, "ตรวจผลนิสิต (สำหรับผู้สอน)"),
+          h("p", { className: "muted" }, "วางรหัส EVD1… ที่นิสิตส่งมาในกล่องด้านล่าง (วางทีละหลายรหัสหรือวางทั้งหน้าส่งงานได้)"),
+          h("textarea", { className: "code-in", rows: 5, value: raw, onChange: e => setRaw(e.target.value), placeholder: "วางรหัส EVD1.… ที่นี่" }),
+          h("div", { className: "row" }, h("button", { className: "btn ghost", onClick: () => setRaw("") }, "ล้างกล่อง"), h("button", { className: "btn ghost", onClick: () => go("home") }, "หน้าหลัก")),
+          (rows.length > 0 || bad.length > 0) && h(Fragment, null,
+            h("div", { className: "t-stats" },
+              h("div", null, h("b", null, rows.length), h("span", null, "นิสิต")),
+              h("div", null, h("b", null, avg), h("span", null, "ดาวเฉลี่ย / 18")),
+              h("div", null, h("b", null, full4), h("span", null, "ผ่านภารกิจ 1–4 ครบ")),
+              h("div", null, h("b", null, bad.length), h("span", null, "รหัสใช้ไม่ได้"))
+            ),
+            dupes > 0 && h("p", { className: "muted small" }, "พบรหัสซ้ำ ", dupes, " รายการ แสดงเฉพาะรหัสล่าสุด"),
+            h("div", { className: "table-scroll" },
+              h("table", { className: "map-table t-table" },
+                h("thead", null, h("tr", null, h("th", null, "รหัสนิสิต"), h("th", null, "ชื่อ"), h("th", null, "กลุ่ม"), ALL_M.map(k => h("th", { key: k }, k)), h("th", null, "รวม"), h("th", null, "จุดที่ควรฝึก"))),
+                h("tbody", null, rows.map(r => h("tr", { key: r.s + r.n },
+                  h("td", null, r.s), h("td", null, r.n), h("td", null, r.g),
+                  ALL_M.map(k => h("td", { key: k, className: "c" }, r.m[k] ? h(Stars, { n: r.m[k][0], size: 13 }) : "–")),
+                  h("td", { className: "c" }, h("b", null, totalStarsOf(r))),
+                  h("td", { className: "small" }, Object.values(r.x).flat().map(tagLabel).join(" · ") || "–")
+                )))
+              )
+            ),
+            h("h3", null, "คัดลอกเป็น CSV"),
+            h("div", { className: "row" },
+              h("button", { className: "btn", onClick: async () => { try { await navigator.clipboard.writeText(csv); setCsvMsg("คัดลอก CSV แล้ว"); } catch { csvRef.current?.select(); setCsvMsg("กด Ctrl+C เพื่อคัดลอก"); } } }, "คัดลอกเป็น CSV"),
+              csvMsg && h("span", { className: "muted" }, csvMsg)
+            ),
+            h("textarea", { ref: csvRef, className: "code-out", readOnly: true, rows: 4, value: csv })
+          )
+        );
+      }
+
+      function SummaryPage({ prog, go, setStudent }) {
+        const sum = MISSIONS_META.reduce((s, m) => s + (prog.missions[m.id]?.stars ?? 0), 0);
+        const tags = MISSIONS_META.flatMap(m => (prog.missions[m.id]?.mistakeTags ?? []).map(t => ({ m, t })));
+        const rec = useCase().mission4.recordFields;
+        return h("div", { className: "page" },
+          h("h2", null, "สรุปผลการฝึก"),
+          h("div", { className: "sum-top" }, h("div", { className: "sum-stars" }, h("b", null, sum), h("span", null, "/ ", MISSIONS_META.length * 3, " ดาว")), h("p", { className: "muted" }, "ดาวเป็นผลการฝึกในเกม ไม่ใช่การรับรองสมรรถนะปฏิบัติจริง")),
+          h("h3", null, "ทักษะ"),
+          h("ul", { className: "skills" }, MISSIONS_META.map(m => {
+            const it = prog.missions[m.id];
+            return h("li", { key: m.id }, h("span", { className: it ? "ok" : "todo" }, it ? "✓" : "○"), h("span", { className: "grow" }, m.skill), h(Stars, { n: it?.stars ?? 0, size: 16 }), h("button", { className: "btn sm", onClick: () => go(m.id), disabled: m.id === "icp" && !coreDone(prog) }, "เล่นซ้ำ"));
+          })),
+          h("h3", null, "จุดที่ควรฝึกซ้ำ"),
+          tags.length === 0 ? h("p", { className: "muted" }, coreDone(prog) ? "ยังไม่พบจุดผิดในรอบล่าสุด" : "เล่นให้ครบ 4 ภารกิจเพื่อดูจุดที่ควรฝึก") : h("ul", { className: "practice" }, tags.map(({ m, t }) => h("li", { key: m.id + t }, tagLabel(t), " ", h("button", { className: "link", onClick: () => go(m.id) }, "ฝึก", m.short)))),
+          h(CodeBox, { prog, setStudent }),
+          h("h3", null, "บันทึกตัวอย่างที่ถูกต้อง"),
+          h("table", { className: "rec-table" }, h("tbody", null, rec.map(f => h("tr", { key: f.id }, h("th", null, f.label), h("td", null, f.options[f.answer]))))),
+          h("div", { className: "row", style: { marginTop: 14 } }, h("button", { className: "btn primary", onClick: () => go("home") }, "หน้าหลัก"), h("button", { className: "btn", onClick: () => go("teacher") }, "ตรวจผล (ผู้สอน)"))
+        );
+      }
+
+      function HomePage({ prog, go, onStart, onClear, setLearning, setCase, randomCase }) {
+        const c = useCase(), unlocked = coreDone(prog);
+        const [confirmClr, setConfirmClr] = useState(false);
+        return h("div", { className: "home" },
+          h("section", { className: "hero" },
+            h("h1", null, "EVD Level Up"),
+            h("p", { className: "sub" }, "จัดระดับให้ตรง ดูแลให้ปลอดภัย"),
+            h("div", { className: "flow big" }, ["เห็นจุด", "จัดศูนย์", "ตั้งตามคำสั่ง", "อ่านค่า", "บันทึก"].map(s => h("span", { key: s, className: "flow-step on" }, s))),
+            h("div", { className: "row center" },
+              h("button", { className: "btn primary lg", onClick: onStart }, prog.tutorialDone ? "เล่นต่อ" : "เริ่มเล่น (Tutorial 1 นาที)"),
+              h("button", { className: "btn", onClick: () => go("tutorial") }, "ดู Tutorial")
+            ),
+            h("p", { className: "muted small" }, "ฝึกดูแลผู้ป่วยผู้ใหญ่หลังผ่าตัดกะโหลกศีรษะที่มี EVD ตามคำสั่งการรักษา · ข้อมูลจำลองทั้งหมด")
+          ),
+          h("section", { className: "case-box" },
+            h("div", { className: "case-head" },
+              h("span", { className: "eyebrow-s" }, "กรณีศึกษาที่กำลังเล่น"),
+              h("div", { className: "choice-row", role: "radiogroup", "aria-label": "เลือกกรณีศึกษา" },
+                CASES.map(x => h("button", { key: x.id, role: "radio", "aria-checked": c.id === x.id, className: `chip ${c.id === x.id ? "on" : ""}`, onClick: () => setCase(x.id) }, x.label)),
+                h("button", { className: "chip", onClick: randomCase }, "สุ่มกรณีใหม่")
+              )
+            ),
+            h("div", { className: "case-body" }, h("b", null, c.label, ": ", c.caseInfo.patient), " · ", c.caseInfo.situation, h("div", { className: "muted small" }, "คำสั่ง: ", c.order.drainLevelText.replace("ตั้งระดับระบาย ", ""), " · ", c.order.position))
+          ),
+          h("section", { className: "grid" }, MISSIONS_META.map(m => {
+            const item = prog.missions[m.id], locked = m.id === "icp" && !unlocked;
+            return h("button", { key: m.id, className: `mcard ${locked ? "locked" : ""}`, onClick: () => !locked && go(m.id), disabled: locked },
+              h("span", { className: "mcard-title" }, m.title),
+              h("span", { className: "muted" }, m.skill),
+              locked ? h("span", { className: "lock" }, "ปลดล็อกเมื่อผ่านภารกิจ 1–4") : h(Stars, { n: item?.stars ?? 0, size: 18 })
+            );
+          })),
+          h("section", { className: "settings row center" },
+            h("label", { className: "switch" }, h("input", { type: "checkbox", checked: prog.settings.learningMode, onChange: e => setLearning(e.target.checked) }), " โหมดเรียนรู้ (เส้นช่วย + snap)"),
+            h("button", { className: "btn ghost", onClick: () => go("summary") }, "หน้าสรุป"),
+            h("button", { className: "btn ghost", onClick: () => go("teacher") }, "ผู้สอน: ตรวจผลนิสิต"),
+            confirmClr
+              ? h("span", { className: "row" }, h("span", { className: "muted" }, "ล้างผลการเล่น?"), h("button", { className: "btn danger", onClick: () => { onClear(); setConfirmClr(false); } }, "ยืนยันล้าง"), h("button", { className: "btn ghost", onClick: () => setConfirmClr(false) }, "ยกเลิก"))
+              : h("button", { className: "btn ghost danger", onClick: () => setConfirmClr(true) }, "ล้างประวัติ")
+          )
+        );
+      }
+
+      const MISSION_MAP = { m1: Mission1, m2: Mission2, m3: Mission3, m4: Mission4, events: EventsMission, icp: IcpMission };
+      function App() {
+        const [prog, setProg] = useState(() => {
+          const s = loadState();
+          return CASE_IDS.includes(s.currentCase) ? s : { ...s, currentCase: pickOtherCase("") };
+        });
+        const [route, setRoute] = useState("home"), [navKey, setNavKey] = useState(0);
+        useEffect(() => saveState(prog), [prog]);
+        useEffect(() => { soundOn = prog.settings.sound; musicOn = prog.settings.music; musicOn ? startMusic() : stopMusic(); }, [prog.settings.sound, prog.settings.music]);
+        useEffect(() => {
+          const onTap = e => {
+            ensureAudio(); if (musicOn) startMusic();
+            const el = e.target?.closest?.("button, select, [role=radio]");
+            if (el && !el.disabled && !el.classList.contains("nbtn")) sfx("tap");
+          };
+          document.addEventListener("pointerdown", onTap);
+          return () => document.removeEventListener("pointerdown", onTap);
+        }, []);
+        useEffect(() => window.scrollTo(0, 0), [route]);
+
+        const go = r => { setRoute(r); setNavKey(k => k + 1); };
+        const record = (mId, stars, mistakeTags) => setProg(p => {
+          const prev = p.missions[mId], done = p.casesDone?.[mId] ?? [];
+          return {
+            ...p,
+            casesDone: { ...p.casesDone, [mId]: p.currentCase && !done.includes(p.currentCase) ? [...done, p.currentCase] : done },
+            missions: { ...p.missions, [mId]: { stars: Math.max(prev?.stars ?? 0, stars), plays: (prev?.plays ?? 0) + 1, mistakeTags, lastPlayed: new Date().toISOString() } }
+          };
+        });
+        const onStart = () => {
+          if (!prog.tutorialDone) return go("tutorial");
+          const next = ["m1", "m2", "m3", "m4", "events"].find(id => !prog.missions[id]) ?? (coreDone(prog) && !prog.missions.icp ? "icp" : "summary");
+          go(next);
+        };
+        const nextFor = id => {
+          const seq = ["m1", "m2", "m3", "m4", "events"];
+          if (id === "events") return coreDone(prog) ? { to: "icp", label: "ไปด่านเสริม ICP" } : { to: "summary", label: "ดูหน้าสรุป" };
+          if (id === "icp") return { to: "summary", label: "ดูหน้าสรุป" };
+          const idx = seq.indexOf(id);
+          return { to: seq[idx + 1], label: idx + 1 === 4 ? "ไปเหตุการณ์สั้น" : "ภารกิจถัดไป" };
+        };
+
+        let view;
+        if (route === "tutorial") { const doneTut = () => { setProg(p => ({ ...p, tutorialDone: true })); go("m1"); }; view = h(Tutorial, { onDone: doneTut, onSkip: doneTut }); }
+        else if (route in MISSION_MAP) {
+          const Comp = MISSION_MAP[route], nxt = nextFor(route);
+          view = h(MissionRunner, { key: navKey, id: route, title: MISSIONS_META.find(m => m.id === route).title.split(" · ")[0], learning: prog.settings.learningMode, sound: prog.settings.sound, onRecord: record, onNext: () => go(nxt.to), nextLabel: nxt.label, onReplay: () => go(route), onHome: () => go("home") }, props => h(Comp, props));
+        } else if (route === "summary") view = h(SummaryPage, { prog, go, setStudent: st => setProg(p => ({ ...p, student: st })) });
+        else if (route === "teacher") view = h(TeacherPage, { go });
+        else view = h(HomePage, { prog, go, onStart, onClear: () => setProg({ ...defaultState(), settings: prog.settings, currentCase: pickOtherCase("") }), setLearning: v => setProg(p => ({ ...p, settings: { ...p.settings, learningMode: v } })), setCase: cid => setProg(p => ({ ...p, currentCase: cid })), randomCase: () => setProg(p => ({ ...p, currentCase: pickOtherCase(p.currentCase) })) });
+
+        const total = MISSIONS_META.reduce((s, m) => s + (prog.missions[m.id]?.stars ?? 0), 0);
+        return h("div", { className: "app" },
+          h("header", { className: "topbar" },
+            h("button", { className: "brand", onClick: () => go("home"), "aria-label": "หน้าหลัก" },
+              h("svg", { width: "26", height: "26", viewBox: "0 0 26 26", "aria-hidden": true }, h("rect", { width: "26", height: "26", rx: "7", fill: "#12355b" }), h("path", { d: "M5 17h16M13 6v11", stroke: "#5fd3c6", strokeWidth: "2.6", strokeLinecap: "round" }), h("circle", { cx: "13", cy: "17", r: "2.6", fill: "#2f8fd8" })),
+              h("span", null, "EVD Level Up")
+            ),
+            h("div", { className: "top-right" },
+              h("span", { className: "total" }, h(Stars, { n: 1, max: 1, size: 18 }), " ", total),
+              route !== "home" && h("button", { className: "btn sm ghost snd", onClick: () => go("home") }, "หน้าหลัก"),
+              h("button", { className: "btn sm ghost snd", "aria-pressed": prog.settings.sound, onClick: () => setProg(p => ({ ...p, settings: { ...p.settings, sound: !p.settings.sound } })) }, prog.settings.sound ? "เสียง: เปิด" : "เสียง: ปิด"),
+              h("button", { className: "btn sm ghost snd", "aria-pressed": prog.settings.music, onClick: () => setProg(p => ({ ...p, settings: { ...p.settings, music: !p.settings.music } })) }, prog.settings.music ? "เพลง: เปิด" : "เพลง: ปิด")
+            )
+          ),
+          h("main", null, h(CaseCtx.Provider, { value: getCase(prog.currentCase) }, view))
+        );
+      }
+
+      const setH = () => document.documentElement.style.setProperty("--app-h", `${Math.round(window.innerHeight)}px`);
+      setH(); window.addEventListener("resize", setH);
+      createRoot(document.getElementById("root")).render(h(StrictMode, null, h(App)));
+    </script>
+  </body>
+</html>
